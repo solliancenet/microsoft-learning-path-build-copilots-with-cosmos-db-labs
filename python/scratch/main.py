@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from azure.cosmos import CosmosClient, PartitionKey, ThroughputProperties, exceptions
+from azure.cosmos import CosmosClient, PartitionKey, ThroughputProperties, DatabaseProxy, ContainerProxy, exceptions
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,17 +29,53 @@ def main():
         print(f"Container '{container_name}' is ready.")
 
         # Insert a sample item
-        item = {
-            'id': 'item1',
-            'name': 'Road Bike 3000',
-            'description': 'This is a very fast road bike.',
-            'categoryId': 'bikes'
-        }
-        container.create_item(body=item)
-        print(f"Item created: {item['id']}")
+        #create_item(container)
+
+        # Read the sample item
+        read_item(container, 'item1', 'bikes')
+
+        # Read all items
+        read_items(container)
+
+        # Read items by query
+        read_items_by_query(container)
+
+        # Get database account details
+        get_database_account_details()
 
     except exceptions.CosmosHttpResponseError as e:
         print(f"Error: {e}")
+
+def create_item(container: ContainerProxy):
+    item = {
+        'id': 'item1',
+        'name': 'Road Bike 3000',
+        'description': 'This is a very fast road bike.',
+        'categoryId': 'bikes'
+    }
+    container.create_item(body=item)
+    print(f"Item created: {item['id']}")
+
+def read_item(container: ContainerProxy, item_id: str, partition_key: str):
+    item = container.read_item(item=item_id, partition_key=partition_key)
+    print(f"Item read: {item['id']}")
+
+def read_items(container: ContainerProxy):
+    items = list(container.read_all_items())
+    print('Reading all items:')
+    for item in items:
+        print(f"Item: {item['id']}")
+
+def read_items_by_query(container: ContainerProxy):
+    query = "SELECT * FROM c WHERE c.categoryId = 'bikes'"
+    items = list(container.query_items(query=query))
+    print('Reading items by query:')
+    for item in items:
+        print(f"Item: {item['id']}")
+
+def get_database_account_details():
+    account = client.get_database_account()
+    print(f"Account readable locations: {account.ReadableLocations}")
 
 if __name__ == "__main__":
     main()
