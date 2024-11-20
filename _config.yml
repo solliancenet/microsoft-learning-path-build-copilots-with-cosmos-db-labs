@@ -22,13 +22,13 @@ callouts:
   warning:
     title: Warning
     color: red
-header_pages:
-  - index.html
+# header_pages:
+#   - index.html
 author: Microsoft Learning
 twitter_username: mslearning
 github_username:  MicrosoftLearning
 plugins:
-  - jekyll-sitemap
+  # - jekyll-sitemap
   - jekyll-mentions
   - jemoji
 markdown: kramdown
