@@ -2,7 +2,7 @@
 title: Python SDK labs
 nav_order: 2
 has_children: true
-layout: default
+layout: home
 ---
 
 # Python SDK labs
