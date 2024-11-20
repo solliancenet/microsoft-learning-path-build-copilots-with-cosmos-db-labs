@@ -1,5 +1,6 @@
 title: 'Build copilots with Azure Cosmos DB'
 theme: just-the-docs
+enable_copy_code_button: true
 baseurl: /microsoft-learning-path-build-copilots-with-cosmos-db-labs
 exclude:
   - readme.md
@@ -34,7 +35,7 @@ author: Microsoft Learning
 twitter_username: mslearning
 github_username:  MicrosoftLearning
 plugins:
-  # - jekyll-sitemap
+  - jekyll-sitemap
   - jekyll-mentions
   - jemoji
 markdown: kramdown
