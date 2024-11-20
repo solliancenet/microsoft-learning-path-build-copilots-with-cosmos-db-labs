@@ -83,7 +83,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
 1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **javascript/01-sdk-connect** folder.
 
-1. Create a new JavaScript file named **script.js**.
+1. Open the empty JavaScript file named **script.js**.
 
 1. Add the following `require` statement to import the **@azure/cosmos** library:
 

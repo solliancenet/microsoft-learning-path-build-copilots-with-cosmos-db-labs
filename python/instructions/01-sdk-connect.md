@@ -83,7 +83,7 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
 
 1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **python/01-sdk-connect** folder.
 
-1. Create a new Python file named **script.py**.
+1. Open the blank Python file named **script.py**.
 
 1. Add the following `import` statement to import the **CosmosClient** class:
 
