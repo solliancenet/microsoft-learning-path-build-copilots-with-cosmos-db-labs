@@ -1,6 +1,7 @@
 ---
 title: Online Hosted Instructions
 permalink: index.html
+has_children: true
 layout: home
 nav_order: 1
 ---
@@ -14,7 +15,7 @@ This repository contains the hands-on lab exercises for the [self-paced modules 
 {% assign labs = site.pages | where_exp:"page", "page.url contains 'python/instructions'" %}
 | Module | Lab |
 | --- | --- |
-{% for activity in labs  %}| {{ activity.lab.module }} | [{{ activity.lab.title }}]({{ site.github.url }}{{ activity.url }}) |
+{% for activity in labs  %}| {{ activity.lab.module }} | [{{ activity.lab.title }}]({{ site.baseurl }}{{ activity.url }}) |
 {% endfor %}
 
 ## JavaScript SDK labs
@@ -22,7 +23,7 @@ This repository contains the hands-on lab exercises for the [self-paced modules 
 {% assign labs = site.pages | where_exp:"page", "page.url contains 'javascript/instructions'" %}
 | Module | Lab |
 | --- | --- |
-{% for activity in labs  %}| {{ activity.lab.module }} | [{{ activity.lab.title }}]({{ site.github.url }}{{ activity.url }}) |
+{% for activity in labs  %}| {{ activity.lab.module }} | [{{ activity.lab.title }}]({{ site.baseurl }}{{ activity.url }}) |
 {% endfor %}
 
 [azure]: https://azure.microsoft.com

@@ -1,5 +1,6 @@
 title: 'Build copilots with Azure Cosmos DB'
 theme: just-the-docs
+baseurl: /microsoft-learning-path-build-copilots-with-cosmos-db-labs
 exclude:
   - readme.md
   - .github/
