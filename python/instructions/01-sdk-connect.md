@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Connect to Azure Cosmos DB for NoSQL with the SDK'
+    title: '01 - Connect to Azure Cosmos DB for NoSQL with the SDK'
     module: 'Connect to Azure Cosmos DB for NoSQL with the SDK'
 ---
 
