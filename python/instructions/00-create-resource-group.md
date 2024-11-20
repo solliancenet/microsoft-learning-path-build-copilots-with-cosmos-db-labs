@@ -1,7 +1,11 @@
 ---
+title: 'Create lab resource group'
 lab:
     title: 'Create lab resource group'
     module: 'Setup'
+layout: default
+nav_order: 1
+parent: 'Python SDK labs'
 ---
 
 # Create Azure resource group for lab

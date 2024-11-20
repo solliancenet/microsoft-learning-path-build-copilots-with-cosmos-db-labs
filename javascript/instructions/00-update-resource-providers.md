@@ -1,7 +1,11 @@
 ---
+title: 'Enable resource providers'
 lab:
     title: 'Enable resource providers'
     module: 'Setup'
+layout: default
+nav_order: 3
+parent: 'JavaScript SDK labs'
 ---
 
 # Enable Azure resource providers

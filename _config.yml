@@ -23,8 +23,13 @@ callouts:
   warning:
     title: Warning
     color: red
-# header_pages:
-#   - index.html
+assets:
+  js:
+    - assets/js/copy-code.js
+  css:
+    - assets/css/custom.css
+header_pages:
+  - index.html
 author: Microsoft Learning
 twitter_username: mslearning
 github_username:  MicrosoftLearning
@@ -35,4 +40,4 @@ plugins:
 markdown: kramdown
 kramdown:
    syntax_highlighter_opts:
-      disable : true
+      disable : false
