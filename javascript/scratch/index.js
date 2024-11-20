@@ -1,8 +1,16 @@
 require('dotenv').config();
-const { CosmosClient, Database, Container } = require('@azure/cosmos');
+const { CosmosClient, Database, Container, ConsistencyLevel, ConnectionPolicy } = require('@azure/cosmos');
 
 // Initialize Cosmos Client
-const client = new CosmosClient(process.env.COSMOS_DB_CONNECTION_STRING);
+const client = new CosmosClient(
+    process.env.COSMOS_DB_CONNECTION_STRING,
+    {
+        consistencyLevel: ConsistencyLevel.Eventual,
+        connectionPolicy: {
+            preferredLocations: ["West US", "East US"],
+            requestTimeout: 10000,
+        },
+    });
 const databaseId = process.env.COSMOS_DB_DATABASE;
 const containerId = process.env.COSMOS_DB_CONTAINER;
 
@@ -13,6 +21,9 @@ async function main() {
         const { database } = await client.databases.createIfNotExists({ id: databaseId });
         console.log(`Database '${databaseId}' is ready.`);
 
+        const databaseInstance = client.database(databaseId);
+        console.log(`Database instance: '${databaseInstance.id}'`);
+
         // Create container if it does not exist
         const { container } = await database.containers.createIfNotExists({
             id: containerId,
@@ -20,6 +31,9 @@ async function main() {
             maxThroughput: 1000,
         });
         console.log(`Container '${containerId}' is ready.`);
+
+        const containerInstance = databaseInstance.container(containerId);
+        console.log(`Container instance: '${containerInstance.id}'`);
 
         // Insert a sample item
         // await createItem(container);
@@ -71,8 +85,8 @@ async function readItemsWithQuery(container) {
 }
 
 async function getDatabaseAccountDetails() {
-    let account = await client.getDatabaseAccount();
-    console.log(`Account readable locations: ${account.resource.readableLocations.map(l => l.name).join(', ')}`);
+    const { resource: accountInfo } = await client.getDatabaseAccount();
+    console.log(`Account readable locations: ${accountInfo.readableLocations.map(l => l.name).join(', ')}`);
 }
 
 main().catch(console.error);

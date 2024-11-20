@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from azure.cosmos import CosmosClient, PartitionKey, ThroughputProperties, DatabaseProxy, ContainerProxy, exceptions
+from azure.cosmos import CosmosClient, PartitionKey, ThroughputProperties, DatabaseProxy, ContainerProxy, ConsistencyLevel, exceptions
 
 # Load environment variables from .env file
 load_dotenv()
@@ -12,13 +12,20 @@ if not connection_string:
     raise ValueError("COSMOS_DB_CONNECTION_STRING is not set in the .env file.")
 
 # Initialize Cosmos Client
-client = CosmosClient.from_connection_string(connection_string)
+client = CosmosClient.from_connection_string(
+    connection_string,
+    consistency_level=ConsistencyLevel.Eventual,
+    preferred_locations=["West US", "East US"],
+    connection_timeout=10)
 
 def main():
     try:
         # Create database if it does not exist
         database = client.create_database_if_not_exists(id=database_name)
         print(f"Database '{database_name}' is ready.")
+
+        database_instance = client.get_database_client(database_name)
+        print(f"Database instance: {database_instance}")
 
         # Create container if it does not exist
         container = database.create_container_if_not_exists(
@@ -27,6 +34,9 @@ def main():
             offer_throughput=ThroughputProperties(auto_scale_max_throughput=1000)
         )
         print(f"Container '{container_name}' is ready.")
+
+        container_instance = database.get_container_client(container_name)
+        print(f"Container instance: {container_instance}")
 
         # Insert a sample item
         #create_item(container)
