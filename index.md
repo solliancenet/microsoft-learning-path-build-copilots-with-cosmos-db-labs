@@ -4,6 +4,7 @@ permalink: index.html
 has_children: true
 layout: home
 nav_order: 1
+permalink: /
 ---
 
 This repository contains the hands-on lab exercises for the [self-paced modules on Microsoft Learn][learn-collection] for building copilots with Azure Cosmos DB. The exercises are designed to accompany the learning materials and enable you to practice using the technologies they describe.
