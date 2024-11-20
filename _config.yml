@@ -4,6 +4,7 @@ enable_copy_code_button: true
 heading_anchors: true
 nav_enabled: true
 back_to_top: true
+has_toc: false
 back_to_top_text: "Back to top"
 baseurl: /microsoft-learning-path-build-copilots-with-cosmos-db-labs
 exclude:
@@ -28,8 +29,8 @@ callouts:
   warning:
     title: Warning
     color: red
-# header_pages:
-#   - index.html
+header_pages:
+  - index.html
 author: Microsoft Learning
 twitter_username: mslearning
 github_username:  MicrosoftLearning
