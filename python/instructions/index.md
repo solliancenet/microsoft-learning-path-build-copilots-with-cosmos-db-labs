@@ -2,7 +2,7 @@
 title: Python SDK labs
 nav_order: 2
 has_children: true
-toc: false
+has_toc: false
 layout: default
 ---
 
