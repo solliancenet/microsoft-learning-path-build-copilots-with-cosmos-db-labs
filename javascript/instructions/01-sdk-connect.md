@@ -1,4 +1,3 @@
-
 ---
 lab:
     title: 'Connect to Azure Cosmos DB for NoSQL with the SDK'
