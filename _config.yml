@@ -28,13 +28,8 @@ callouts:
   warning:
     title: Warning
     color: red
-assets:
-  js:
-    - assets/js/copy-code.js
-  css:
-    - assets/css/custom.css
-header_pages:
-  - index.html
+# header_pages:
+#   - index.html
 author: Microsoft Learning
 twitter_username: mslearning
 github_username:  MicrosoftLearning
