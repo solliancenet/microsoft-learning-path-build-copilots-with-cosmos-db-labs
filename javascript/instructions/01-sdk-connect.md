@@ -63,11 +63,11 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
 
 The **@azure/cosmos** library is available on **npm** for easy installation into your JavaScript projects.
 
-1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **01-sdk-connect** folder.
+1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **javascript/01-sdk-connect** folder.
 
 1. Open the context menu for the **04-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
-    > &#128221; This command will open the terminal with the starting directory already set to the **01-sdk-connect** folder.
+    > &#128221; This command will open the terminal with the starting directory already set to the **javascript/01-sdk-connect** folder.
 
 1. Install the [@azure/cosmos][npmjs.com/package/@azure/cosmos] package using the following command:
 
@@ -81,7 +81,7 @@ The **@azure/cosmos** library is available on **npm** for easy installation into
 
 Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been imported, you can immediately use its classes to connect to an Azure Cosmos DB for NoSQL account. The **CosmosClient** class is the core class used to make the initial connection to an Azure Cosmos DB for NoSQL account.
 
-1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **04-sdk-connect** folder.
+1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **javascript/01-sdk-connect** folder.
 
 1. Create a new JavaScript file named **script.js**.
 
@@ -149,7 +149,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
 Now that the JavaScript code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the name of the account and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
 
-1. In **Visual Studio Code**, open the context menu for the **01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
+1. In **Visual Studio Code**, open the context menu for the **javascript/01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
 1. Run the script using the `node` command:
 
