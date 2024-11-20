@@ -65,9 +65,15 @@ The **@azure/cosmos** library is available on **npm** for easy installation into
 
 1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **javascript/01-sdk-connect** folder.
 
-1. Open the context menu for the **04-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
+1. Open the context menu for the **javascript/01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
     > &#128221; This command will open the terminal with the starting directory already set to the **javascript/01-sdk-connect** folder.
+
+1. Initialize a new Node.js project:
+
+    ```bash
+    npm init -y
+    ```
 
 1. Install the [@azure/cosmos][npmjs.com/package/@azure/cosmos] package using the following command:
 
@@ -113,7 +119,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
     ```javascript
     async function main() {
         const { resource: account } = await client.getDatabaseAccount();
-        console.log(`Account Name: ${account.id}`);
+        console.log(`Consistency Policy: ${account.consistencyPolicy}`);
         console.log(`Primary Region: ${account.writableLocations[0].name}`);
     }
     ```
@@ -136,7 +142,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
     async function main() {
         const { resource: account } = await client.getDatabaseAccount();
-        console.log(`Account Name:	${account.id}`);
+        console.log(`Consistency Policy: ${account.consistencyPolicy}`);
         console.log(`Primary Region:	${account.writableLocations[0].name}`);
     }
 
@@ -147,7 +153,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
 ## Test the script
 
-Now that the JavaScript code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the name of the account and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
+Now that the JavaScript code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the default consistency level and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
 
 1. In **Visual Studio Code**, open the context menu for the **javascript/01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
@@ -157,11 +163,11 @@ Now that the JavaScript code to connect to the Azure Cosmos DB for NoSQL account
     node script.js
     ```
 
-1. The script will now output the name of the account and the first writable region. For example, if you named the account **dp420**, and the first writable region was **West US 2**, the script would output:
+1. The script will now output the default consistency level of the account and the first writable region. For example, if default consistency level for the account is **Session**, and the first writable region was **East US**, the script would output:
 
     ```text
-    Account Name:   dp420
-    Primary Region: West US 2
+    Consistency Policy: Session
+    Primary Region: East US
     ```
 
 1. Close the integrated terminal.

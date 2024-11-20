@@ -69,6 +69,13 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
 
     > &#128221; This command will open the terminal with the starting directory already set to the **python/01-sdk-connect** folder.
 
+1. Create and activate a virtual environment to manage dependencies:
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
+    ```
+
 1. Install the [azure-cosmos][pypi.org/project/azure-cosmos] package using the following command:
 
     ```bash
@@ -112,9 +119,9 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
 
     ```python
     def main():
-        account_info = client.client_connection.read_account()
-        print(f"Account Name:	{account_info['id']}")
-        print(f"Primary Region:	{account_info['writableLocations'][0]['name']}")
+        account_info = client.get_database_account()
+        print(f"Consistency Policy:	{account_info.ConsistencyPolicy}")
+        print(f"Primary Region: {account_info.WritableLocations[0]['name']}")
 
     if __name__ == "__main__":
         main()
@@ -131,9 +138,9 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
     client = CosmosClient(endpoint, key)
 
     def main():
-        account_info = client.client_connection.read_account()
-        print(f"Account Name:	{account_info['id']}")
-        print(f"Primary Region:	{account_info['writableLocations'][0]['name']}")
+        account_info = client.get_database_account()
+        print(f"Consistency Policy:	{account_info.ConsistencyPolicy}")
+        print(f"Primary Region: {account_info.WritableLocations[0]['name']}")
 
     if __name__ == "__main__":
         main()
@@ -143,7 +150,7 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
 
 ## Test the script
 
-Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the name of the account and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
+Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the default consistency level and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
 
 1. In **Visual Studio Code**, open the context menu for the **python/01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
@@ -153,11 +160,11 @@ Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is 
     python script.py
     ```
 
-1. The script will now output the name of the account and the first writable region. For example, if you named the account **dp420**, and the first writable region was **West US 2**, the script would output:
+1. The script will now output the default consistency level and the first writable region. For example, if the default consistency level for the account is **Session**, and the first writable region was **East US**, the script would output:
 
     ```text
-    Account Name:   dp420
-    Primary Region: West US 2
+    Consistency Policy:   {'defaultConsistencyLevel': 'Session'}
+    Primary Region: East US
     ```
 
 1. Close the integrated terminal.
