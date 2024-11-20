@@ -1,6 +1,8 @@
 ---
 title: Python SDK labs
 nav_order: 2
+has_children: true
+layout: default
 ---
 
 # Python SDK labs
