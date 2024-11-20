@@ -143,7 +143,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
     async function main() {
         const { resource: account } = await client.getDatabaseAccount();
         console.log(`Consistency Policy: ${account.consistencyPolicy}`);
-        console.log(`Primary Region:	${account.writableLocations[0].name}`);
+        console.log(`Primary Region: ${account.writableLocations[0].name}`);
     }
 
     main().catch((error) => console.error(error));
