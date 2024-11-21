@@ -2,7 +2,7 @@
 title: '02 - Configure the Azure Cosmos DB Python SDK for Offline Development'
 lab:
     title: '02 - Configure the Azure Cosmos DB Python SDK for Offline Development'
-    module: 'Configure the Azure Cosmos DB Python SDK for Offline Development'
+    module: 'Configure the Azure Cosmos DB for NoSQL SDK'
 layout: default
 nav_order: 5
 parent: 'Python SDK labs'
