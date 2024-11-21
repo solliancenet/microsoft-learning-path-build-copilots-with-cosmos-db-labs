@@ -1,5 +1,12 @@
 title: 'Build copilots with Azure Cosmos DB'
-remote_theme: MicrosoftLearning/Jekyll-Theme
+theme: just-the-docs
+enable_copy_code_button: true
+heading_anchors: true
+nav_enabled: true
+back_to_top: true
+
+back_to_top_text: "Back to top"
+baseurl: /microsoft-learning-path-build-copilots-with-cosmos-db-labs
 exclude:
   - readme.md
   - .github/
@@ -34,4 +41,4 @@ plugins:
 markdown: kramdown
 kramdown:
    syntax_highlighter_opts:
-      disable : true
+      disable : false

@@ -1,8 +1,11 @@
-
 ---
+title: '01 - Connect to Azure Cosmos DB for NoSQL with the SDK'
 lab:
-    title: 'Connect to Azure Cosmos DB for NoSQL with the SDK'
-    module: 'Connect to Azure Cosmos DB for NoSQL with the SDK'
+    title: '01 - Connect to Azure Cosmos DB for NoSQL with the SDK'
+    module: 'Use the Azure Cosmos DB for NoSQL SDK'
+layout: default
+nav_order: 4
+parent: 'Python SDK labs'
 ---
 
 # Connect to Azure Cosmos DB for NoSQL with the SDK

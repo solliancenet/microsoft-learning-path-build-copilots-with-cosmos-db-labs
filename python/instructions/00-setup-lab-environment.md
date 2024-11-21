@@ -1,7 +1,11 @@
 ---
+title: 'Setup lab environment'
 lab:
     title: 'Setup lab environment'
     module: 'Setup'
+layout: default
+nav_order: 2
+parent: 'Python SDK labs'
 ---
 
 # Setup local lab environment
@@ -36,6 +40,12 @@ Ideally, you should complete these labs in a hosted lab environment. If you want
 
     - [Python extension for Visual Studio Code][marketplace.visualstudio.com/mms-python.python]
 
+### Azure Cosmos DB Emulator
+
+1. Download and install from [docs.microsoft.com/azure/cosmos-db/local-emulator].
+    - Use the default options in the installer.
+
+[docs.microsoft.com/azure/cosmos-db/local-emulator]: https://docs.microsoft.com/azure/cosmos-db/local-emulator#download-the-emulator
 [code.visualstudio.com/download]: https://code.visualstudio.com/download
 [git-scm.com/downloads]: https://git-scm.com/downloads
 [python.org/downloads]: https://www.python.org/downloads/

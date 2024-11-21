@@ -1,7 +1,11 @@
 ---
+title: 'Setup lab environment'
 lab:
     title: 'Setup lab environment'
     module: 'Setup'
+layout: default
+nav_order: 2
+parent: 'JavaScript SDK labs'
 ---
 
 # Setup local lab environment
@@ -39,6 +43,12 @@ Recommended way to install the latest version of NPM and node.js on Windows:
 
 1. After installation, start Visual Studio Code.
 
+### Azure Cosmos DB Emulator
+
+1. Download and install from [docs.microsoft.com/azure/cosmos-db/local-emulator].
+    - Use the default options in the installer.
+
+[docs.microsoft.com/azure/cosmos-db/local-emulator]: https://docs.microsoft.com/azure/cosmos-db/local-emulator#download-the-emulator
 [code.visualstudio.com/download]: https://code.visualstudio.com/download
 [git-scm.com/downloads]: https://git-scm.com/downloads
 [nodejs.org/en/download]: https://nodejs.org/en/download
