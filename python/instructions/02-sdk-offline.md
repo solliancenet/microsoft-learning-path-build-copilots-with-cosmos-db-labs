@@ -189,3 +189,6 @@ kill <PID>
 1. Select **Exit** to shut down the emulator.
 
 > 💡 It may take a minute for all instances of the emulator to exit.
+
+[code.visualstudio.com/docs/getstarted]: https://code.visualstudio.com/docs/getstarted/tips-and-tricks
+[pypi.org/project/azure-cosmos]: https://pypi.org/project/azure-cosmos
