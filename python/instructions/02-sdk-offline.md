@@ -74,22 +74,22 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
 
 1. Add the following code to connect to the emulator, create a database, and print its ID:
 
-```python
-from azure.cosmos import CosmosClient, PartitionKey
-
-# Connection string for the Azure Cosmos DB Emulator
-connection_string = "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-
-# Initialize the Cosmos client
-client = CosmosClient.from_connection_string(connection_string)
-
-# Create a database
-database_name = "cosmicworks"
-database = client.create_database_if_not_exists(id=database_name)
-
-# Print the database ID
-print(f"New Database: Id: {database.id}")
-```
+    ```python
+    from azure.cosmos import CosmosClient, PartitionKey
+    
+    # Connection string for the Azure Cosmos DB Emulator
+    connection_string = "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+    
+    # Initialize the Cosmos client
+    client = CosmosClient.from_connection_string(connection_string)
+    
+    # Create a database
+    database_name = "cosmicworks"
+    database = client.create_database_if_not_exists(id=database_name)
+    
+    # Print the database ID
+    print(f"New Database: Id: {database.id}")
+    ```
 
 1. **Save** the **script.py** file.
 
@@ -117,29 +117,29 @@ You can extend the script to create a container within the database.
 
 1. Modify the `script.py` file to add the following code at the bottom of the file for creating a container:
 
-```python
-# Create a container
-container_name = "products"
-partition_key_path = "/categoryId"
-throughput = 400
-
-container = database.create_container_if_not_exists(
-    id=container_name,
-    partition_key=PartitionKey(path=partition_key_path),
-    offer_throughput=throughput
-)
-
-# Print the container ID
-print(f"New Container: Id: {container.id}")
-```
+    ```python
+    # Create a container
+    container_name = "products"
+    partition_key_path = "/categoryId"
+    throughput = 400
+    
+    container = database.create_container_if_not_exists(
+        id=container_name,
+        partition_key=PartitionKey(path=partition_key_path),
+        offer_throughput=throughput
+    )
+    
+    # Print the container ID
+    print(f"New Container: Id: {container.id}")
+    ```
 
 ### Run the Updated Script
 
 1. Run the updated script using the following command:
 
-```bash
-python script.py
-```
+    ```bash
+    python script.py
+    ```
 
 1. The script creates a container named `products` in the emulator. You should see output similar to the following:
 
@@ -171,9 +171,9 @@ Alternatively, if you need to stop the emulator process manually:
 
 1. Use the following command to find the emulator process:
 
-```bash
-ps aux | grep CosmosDB.Emulator
-```
+    ```bash
+    ps aux | grep CosmosDB.Emulator
+    ```
 
 Identify the **PID** (Process ID) of the emulator process in the output. Use the kill command to terminate the emulator process:
 
