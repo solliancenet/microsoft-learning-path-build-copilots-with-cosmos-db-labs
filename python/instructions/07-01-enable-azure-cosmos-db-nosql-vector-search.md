@@ -10,9 +10,9 @@ parent: 'Python SDK labs'
 
 # Enable Vector Search for Azure Cosmos DB for NoSQL
 
-Azure Cosmos DB for NoSQL provides an efficient vector indexing and search capability designed to store and query high-dimensional vectors efficiently and accurately at any scale. Storing vectors directly in the documents alongside their associated data simplifies data management, AI application architectures, and the efficiency of vector-based operations.
+Azure Cosmos DB for NoSQL provides an efficient vector indexing and search capability designed to store and query high-dimensional vectors efficiently and accurately at any scale. To take advantage of this capability, you must enable your account to use the *Vector Search for NoSQL API* feature.
 
-In this lab, you will enable the Vector Search feature your Azure Cosmos DB for NoSQL database for use as a vector store by enabling the vector search feature.
+In this lab, you will create an Azure Cosmos DB for NoSQL account and enable the Vector Search feature on it in order to prepare a database for use as a vector store.
 
 ## Prepare your development environment
 
@@ -51,46 +51,6 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
     > &#128221; Your lab environments may have restrictions preventing you from creating a new resource group. If that is the case, use the existing pre-created resource group.
 
 4. Wait for the deployment task to complete before continuing with the next task.
-
-## Assign yourself to the Cosmos DB Built-in Data Contributor RBAC role
-
-In this task, you will grant your Entra ID user identity access to manage data in your Azure Cosmos DB for NoSQL account by assigning it to the **Cosmos DB Built-in Data Contributor** RBAC role.
-
-1. From the toolbar in the [Azure portal](https://portal.azure.com), open a Cloud Shell.
-
-    ![The Cloud Shell icon is highlighted on the Azure portal's toolbar.](media/07-azure-portal-toolbar-cloud-shell.png)
-
-2. At the Cloud Shell prompt, ensure the subscription you are using for this exercise is in use by running `az account set -s <SUBSCRIPTION_ID>`, replacing the `<SUBSCRIPTION_ID>` placeholder token with the id of the subscription you are using for this exercise.
-
-3. Before assigning your account to the **Cosmos DB Built-in Data Contributor** RBAC role, you must retrieve your Entra ID user identity object ID using the Azure CLI. Execute the following command a the Cloud Shell prompt, replacing the `<USER_PRINCIPAL_NAME>` with your user principal name (e.g., an email address like `user@domain.com`).
-
-    ```azurecli
-    az ad user show --id <USER_PRINCIPAL_NAME> --query id --output tsv
-    ```
-
-    The above command returns object ID associated with your user identity.
-
-4. Copy the output of the above command for use as the `<PRINCIPAL_OBJECT_ID>` token in the `az cosmosdb sql role assignment create` command below.
-
-5. Next, you will retrieve the definition id of the **Cosmos DB Built-in Data Contributor** role. Run the following command, ensuring you replace the `<RESOURCE_GROUP_NAME>` and `<COSMOS_DB_ACCOUNT_NAME>` tokens.
-
-    ```azurecli
-    az cosmosdb sql role definition list --resource-group "<RESOURCE_GROUP_NAME>" --account-name "<COSMOS_DB_ACCOUNT_NAME>"
-    ```
-
-    Review the output and locate the role definition named **Cosmos DB Built-in Data Contributor**. The output contains the unique identifier of the role definition in the `name` property. Record this value as it is required to use in the assignment step later in the next step.
-
-6. You are now ready to assign yourself to the **Cosmos DB Built-in Data Contributor** role definition. Enter the following command at the prompt, making sure to replace the `<RESOURCE_GROUP_NAME>`, `<COSMOS_DB_ACCOUNT_NAME>`, and `<PRINCIPAL_OBJECT_ID>` tokens.
-
-    > &#128221; In the command below, the `role-definition-id` is set to `00000000-0000-0000-0000-000000000002`, which is the default value for the **Cosmos DB Built-in Data Contributor** role definition. If the value you retrieved from the `az cosmosdb sql role definition list` command differs, replace the value in the command below before execution.
-
-    ```azurecli
-    az cosmosdb sql role assignment create --resource-group "<RESOURCE_GROUP_NAME>" --account-name "<COSMOS_DB_ACCOUNT_NAME>" --role-definition-id "00000000-0000-0000-0000-000000000002" --principal-id "<PRINCIPAL_OBJECT_ID>" --scope "/"
-    ```
-
-7. When the command finishes running, you will be able to run code locally to insert vectors into the your Cosmos DB NoSQL database.
-
-8. Keep the Cloud Shell open for the next task.
 
 ## Enable Vector Search for NoSQL API
 
@@ -138,19 +98,3 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
       ![Screenshot of the Container Vector Policy specified above entered into the New Container dialog.](media/07-azure-cosmos-db-container-vector-policy.png)
 
    7. Select **OK** to create the database and container.
-
-## Import sample data
-
-With the `Products` container created, you are ready to populate it with sample data from the Cosmic Works dataset.
-
-1. In the Cosmos DB Data Explorer, expand the **CosmicWorks** database and the **Products** container.
-
-2. Select **Items** and then select **Upload Item** from the Data Explorer toolbar.
-
-    ![The Upload Item button on the Data Explorer toolbar is highlighted.](media/07-azure-cosmos-db-data-explorer-items-toolbar-upload-item.png)
-
-3. In the **Upload Items** dialog, select the browse button next to the **Select JSON Files** box and select the `products.json` file located in the `data\07` folder of the GitHub repo you cloned.
-
-    > This will result in 295 documents being created in the `Products` container.
-
-4. Close the **Upload Items** dialog.
