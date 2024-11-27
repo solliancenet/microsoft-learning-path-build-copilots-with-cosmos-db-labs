@@ -4,7 +4,7 @@ lab:
     title: '07 - Enable Vector Search for Azure Cosmos DB for NoSQL'
     module: 'Build copilots with Python and Azure Cosmos DB for NoSQL'
 layout: default
-nav_order: 4
+nav_order: 10
 parent: 'Python SDK labs'
 ---
 
