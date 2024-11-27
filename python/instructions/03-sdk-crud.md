@@ -87,8 +87,6 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
-1. Close the integrated terminal.
-
 ## Use the azure-cosmos library
 
 Using the credentials from the newly created account, you will connect with the SDK classes and create a new database and container instance. Then, you will use the Data Explorer to validate that the instances exist in the Azure portal.
@@ -242,7 +240,7 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
 
 1. Return to **Visual Studio Code**.
 
-1. Return to the editor tab for the **script.cs** code file.
+1. Return to the editor tab for the **script.py** code file.
 
 1. Delete the following lines of code:
 
