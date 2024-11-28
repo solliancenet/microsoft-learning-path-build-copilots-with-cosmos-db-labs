@@ -457,28 +457,5 @@ While learning the SDK, it's not uncommon to use an online Azure Cosmos DB accou
 
 1. Close **Visual Studio Code**.
 
-## Test the script
-
-Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is complete, you can test the script. This script will print the default consistency level and the name of the first writable region. When you created the account, you specified a location, and you should expect to see that same location value printed as the result of this script.
-
-1. In **Visual Studio Code**, open the context menu for the **python/03-sdk-crud** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
-
-1. Run the script using the `python` command:
-
-    ```bash
-    python script.py
-    ```
-
-1. The script will now output the default consistency level and the first writable region. For example, if the default consistency level for the account is **Session**, and the first writable region was **East US**, the script would output:
-
-    ```text
-    Consistency Policy:   {'defaultConsistencyLevel': 'Session'}
-    Primary Region: East US
-    ```
-
-1. Close the integrated terminal.
-
-1. Close **Visual Studio Code**.
-
 [code.visualstudio.com/docs/getstarted]: https://code.visualstudio.com/docs/getstarted/tips-and-tricks
 [pypi.org/project/azure-cosmos]: https://pypi.org/project/azure-cosmos
