@@ -11,3 +11,5 @@ __pycache__/
 # Visual Studio Code
 .localhistory/
 .vscode/settings.json
+
+*_solution.py
