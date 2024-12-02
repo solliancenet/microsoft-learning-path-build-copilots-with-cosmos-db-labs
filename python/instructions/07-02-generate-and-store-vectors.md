@@ -74,6 +74,8 @@ In addition to the embedding model, you will need a chat completion model for yo
 
 To allow your user identity to interact with the Azure OpenAI service, you can assign your account the **Cognitive Services OpenAI User** role. Azure OpenAI Service supports Azure role-based access control (Azure RBAC), an authorization system for managing individual access to Azure resources. Using Azure RBAC, you assign different team members different levels of permissions based on their needs for a given project.
 
+> &#128221; Microsoft Entra ID's Role-Based Access Control (RBAC) for authenticating against Azure services like Azure OpenAI enhances security through precise access controls tailored to user roles, effectively reducing unauthorized access risks. Streamlining secure access management using Entra ID RBAC makes a more efficient and scalable solution for leveraging Azure services.
+
 1. In the Azure portal (``portal.azure.com``), navigate to your Azure OpenAI resource.
 
 2. Select **Access Control (IAM)** on the left navigation pane.
@@ -151,6 +153,8 @@ The Python SDK for Azure OpenAI provides access to classes that can be used to c
     ```python
     from azure.identity import DefaultAzureCredential, get_bearer_token_provider
     ```
+
+    > &#128221; To ensure you can securely interact with Azure services from your API, you will use the Azure Identity SDK for Python. This approach allows you to avoid having to store or interact with keys from code, instead leveraging the RBAC roles you assigned to your account for access to Azure Cosmos DB and Azure OpenAI in the previous exercises.
 
 4. Create variables to store the Azure OpenAI API version and endpoint, replacing the `<AZURE_OPENAI_ENDPOINT>` token with the endpoint value for your Azure OpenAI service. Also, create a variable for the name of your embedding model deployment. Insert the following code below the `import` statements in the file:
 
