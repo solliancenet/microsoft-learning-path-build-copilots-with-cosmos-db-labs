@@ -14,6 +14,8 @@ Azure Cosmos DB for NoSQL provides an efficient vector indexing and search capab
 
 In this lab, you will create an Azure Cosmos DB for NoSQL account and enable the Vector Search feature on it in order to prepare a database for use as a vector store.
 
+> &#128721; If you have not completed the previous exercise in this module, please go back and finish it before continuing, as it provides the necessary infrastructure for this lab.
+
 ## Prepare your development environment
 
 If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** to the environment where you're working on this lab, follow these steps to do so. Otherwise, open the previously cloned folder in **Visual Studio Code**.
@@ -108,6 +110,8 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
 ### Provide your user identity the Cosmos DB Built-in Data Contributor RBAC role
 
 As the final task in this exercise, you will grant your Microsoft Entra ID user identity access to manage data in your Azure Cosmos DB for NoSQL account by assigning it to the **Cosmos DB Built-in Data Contributor** RBAC role. This will allow you use Azure authentication to access the database from Python code, and avoid needing to store and manage keys.
+
+> &#128221; Utilizing Microsoft Entra ID's Role-Based Access Control (RBAC) for authenticating against Azure services like Azure Cosmos DB presents several primary benefits over key-based methods. Entra ID RBAC enhances security through precise access controls tailored to user roles, effectively reducing unauthorized access risks. It also streamlines user management, enabling administrators to dynamically assign and modify permissions without the hassle of distributing and maintaining cryptographic keys. Furthermore, this approach enhances compliance and auditability by aligning with organizational policies and facilitating comprehensive access monitoring and review. By streamlining secure access management, Entra ID RBAC makes a more efficient and scalable solution for leveraging Azure services.
 
 1. From the toolbar in the [Azure portal](https://portal.azure.com), open a new Cloud Shell.
 
