@@ -84,7 +84,7 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
 2. In the **New Container** dialog:
    1. Under **Database id**, select **Create new** and enter "CosmicWorks" into the database id field.
    2. In the **Container id** box, enter the name "Products."
-   3. Assign "/categoryId" as the **Partition key.**
+   3. Assign "/category_id" as the **Partition key.**
    4. Ensure the **Container throughput** is set to **Autoscale** with a max RU/s of 4000.
 
       ![Screenshot of the New Container settings specified above entered into the dialog.](media/07-azure-cosmos-db-new-container.png)
