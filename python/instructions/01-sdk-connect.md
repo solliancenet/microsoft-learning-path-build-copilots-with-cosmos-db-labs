@@ -30,7 +30,7 @@ If you have not already cloned the lab code repository for **Build copilots with
 
 ## Create an Azure Cosmos DB for NoSQL account
 
-If you already have an Azure Cosmos DB for NoSQL account, you can use it for this lab. Otherwise, follow these steps to create a new Azure Cosmos DB for NoSQL account.
+If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#install-the-azure-cosmos-library). Otherwise, follow the steps below to create a new Azure Cosmos DB for NoSQL account.
 
 <details markdown=1>
 <summary markdown="span"><strong>Click to expand/collapse steps to create an Azure Cosmos DB for NoSQL account</strong></summary>
@@ -67,7 +67,6 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
 7. Keep the browser tab open, as we will return to it later.
 
 </details>
-<br/>
 
 ## Install the azure-cosmos library
 
