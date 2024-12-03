@@ -134,7 +134,7 @@ Virtual environments in Python are essential for maintaining a clean and organiz
     | `streamlit` | 1.40.2 | Transforms Python scripts into interactive web apps. |
     | `uvicorn` | 0.32.1 | An ASGI web server implementation for Python. |
 
-## Create a Python function to vectorize text
+## Add a Python function to vectorize text
 
 The Python SDK for Azure OpenAI provides access to classes that can be used to create embeddings for textual data. This functionality can be encapsulated in a function in your Python code.
 
@@ -290,7 +290,17 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
 
 3. In Visual Studio Code, open a new integrated terminal window.
 
-4. Ensure the intgrated terminal window is running within your Python virutal environment by activating your virtual environment using a command from the table below, selecting the appropriate command for your OS and shell.
+4. Before running the API, which will send requests to Azure OpenAI, you must log into Azure using the `az login` command. At the terminal window, run:
+
+    ```azurecli
+    az login
+    ```
+
+5. Complete the login process in your browser.
+
+6. At the terminal prompt, change directories to `python/07-build-copilot`.
+
+7. Ensure the intgrated terminal window is running within your Python virutal environment by activating your virtual environment using a command from the table below, selecting the appropriate command for your OS and shell.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -301,13 +311,13 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-5. At the terminal prompt, change directories to `python/07-build-copilot/api/app`, then execute the following command:
+8. At the terminal prompt, change directories to `api/app`, then execute the following command:
 
     ```python
     python main.py "Hello, world!"
     ```
 
-6. Observe the output in the terminal window. You should see an array of floating point number, which is the vector representation of the "Hello, world!" string. It should look similiar to the following abbreviated output:
+9. Observe the output in the terminal window. You should see an array of floating point number, which is the vector representation of the "Hello, world!" string. It should look similiar to the following abbreviated output:
 
     ```bash
     [-0.019184619188308716, -0.025279032066464424, -0.0017195191467180848, 0.01884828321635723...]
@@ -429,11 +439,8 @@ To test both the `generate_embeddings` and `upsert_document` functions together,
         from models import Product
         import requests
     
-        product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json?v=1"
-        headers = {
-            "Cache-Control": "no-cache",
-        }
-        products = [Product(**data) for data in requests.get(product_raw_data, headers=headers).json()]
+        product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json?v=1"}
+        products = [Product(**data) for data in requests.get(product_raw_data).json()]
         
         # Call the generate_embeddings function, passing in an argument from the command line.    
         for product in products:
