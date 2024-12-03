@@ -74,6 +74,8 @@ In addition to the embedding model, you will need a chat completion model for yo
 
 To allow your user identity to interact with the Azure OpenAI service, you can assign your account the **Cognitive Services OpenAI User** role. Azure OpenAI Service supports Azure role-based access control (Azure RBAC), an authorization system for managing individual access to Azure resources. Using Azure RBAC, you assign different team members different levels of permissions based on their needs for a given project.
 
+> &#128221; Microsoft Entra ID's Role-Based Access Control (RBAC) for authenticating against Azure services like Azure OpenAI enhances security through precise access controls tailored to user roles, effectively reducing unauthorized access risks. Streamlining secure access management using Entra ID RBAC makes a more efficient and scalable solution for leveraging Azure services.
+
 1. In the Azure portal (``portal.azure.com``), navigate to your Azure OpenAI resource.
 
 2. Select **Access Control (IAM)** on the left navigation pane.
@@ -152,6 +154,8 @@ The Python SDK for Azure OpenAI provides access to classes that can be used to c
     from azure.identity import DefaultAzureCredential, get_bearer_token_provider
     ```
 
+    > &#128221; To ensure you can securely interact with Azure services from your API, you will use the Azure Identity SDK for Python. This approach allows you to avoid having to store or interact with keys from code, instead leveraging the RBAC roles you assigned to your account for access to Azure Cosmos DB and Azure OpenAI in the previous exercises.
+
 4. Create variables to store the Azure OpenAI API version and endpoint, replacing the `<AZURE_OPENAI_ENDPOINT>` token with the endpoint value for your Azure OpenAI service. Also, create a variable for the name of your embedding model deployment. Insert the following code below the `import` statements in the file:
 
     ```python
@@ -176,25 +180,29 @@ The Python SDK for Azure OpenAI provides access to classes that can be used to c
     )
     ```
 
-6. To handle the creation of embeddings, insert the following, which adds a function to generate embeddings using an Azure OpenAI client:
+6. Create an Azure OpenAI client by adding this code below the `token_provider`:
 
     ```python
-    def generate_embeddings(text: str, model: str = "text-embedding-3-small"):
-        client = AzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
-        )
+    # Create Azure OpenAI client
+    aoai_client = AzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = token_provider
+    )
+    ```
 
-        response = client.embeddings.create(
+7. To handle the creation of embeddings, insert the following, which adds a function to generate embeddings using an Azure OpenAI client:
+
+    ```python
+    def generate_embeddings(text: str):
+        response = aoai_client.embeddings.create(
             input = text,
-            model = model
+            model = EMBEDDING_DEPLOYMENT_NAME
         )
-
         return response.data[0].embedding
     ```
 
-7. The `main.py` file should now look similar to the following:
+8. The `main.py` file should now look similar to the following:
 
     ```python
     from openai import AzureOpenAI
@@ -204,7 +212,7 @@ The Python SDK for Azure OpenAI provides access to classes that can be used to c
     AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
     AZURE_OPENAI_API_VERSION = "2024-10-21"
     EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
-
+    
     # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
     token_provider = get_bearer_token_provider(
@@ -212,28 +220,28 @@ The Python SDK for Azure OpenAI provides access to classes that can be used to c
         "https://cognitiveservices.azure.com/.default"
     )
     
-    def generate_embeddings(text: str, model: str = "text-embedding-3-small"):
-        client = AzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
-        )
+    # Create Azure OpenAI client
+    aoai_client = AzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = token_provider
+    )
     
-        response = client.embeddings.create(
+    def generate_embeddings(text: str):
+        response = aoai_client.embeddings.create(
             input = text,
-            model = model
+            model = EMBEDDING_DEPLOYMENT_NAME
         )
-    
         return response.data[0].embedding
     ```
 
-8. Save the `main.py` file.
+9. Save the `main.py` file.
 
 ## Test the embedding function
 
-To test the `generate_embeddings` function in the `main.py` file, you will add a few lines of code at the bottom of the file. These lines allow you to execute the `generate_embeddings` function from the command line, passing in the text to embed.
+To ensure the `generate_embeddings` function in the `main.py` file is working correctly, you will add a few lines of code at the bottom of the file to allow it to be run directly. These lines allow you to execute the `generate_embeddings` function from the command line, passing in the text to embed.
 
-1. At the bottom of the `main.py` file, add the following:
+1. Add a main guard block containing a temporary call to `generate_embeddings` at the bottom of the `main.py` file:
 
     ```python
     if __name__ == "__main__":
@@ -241,7 +249,7 @@ To test the `generate_embeddings` function in the `main.py` file, you will add a
         print(generate_embeddings(sys.argv[1]))
     ```
 
-    > &#128221; This code is temporary and intended to provide a mechanism for quickly testing the `generate_embeddings` function. It will be overwritten later in this exercise.
+    > &#128221; The `if __name__ == "__main__":` block is commonly referred to as the **main guard** or **entry point** in Python. It ensures that certain code is only executed when the script is run directly, and not when it is imported as a module in another script. This practice helps in organizing code and makes it more reusable and modular.
 
 2. Save the `main.py` file, which should now look like:
 
@@ -254,25 +262,25 @@ To test the `generate_embeddings` function in the `main.py` file, you will add a
     AZURE_OPENAI_API_VERSION = "2024-10-21"
     EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
     
-    # Use Microsoft Entra ID RBAC authentication
+    # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
     token_provider = get_bearer_token_provider(
         credential,
         "https://cognitiveservices.azure.com/.default"
     )
     
-    def generate_embeddings(text: str, model: str = "text-embedding-3-small"):
-        client = AzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
-        )
+    # Create Azure OpenAI client
+    aoai_client = AzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = token_provider
+    )
     
-        response = client.embeddings.create(
+    def generate_embeddings(text: str):
+        response = aoai_client.embeddings.create(
             input = text,
-            model = model
+            model = EMBEDDING_DEPLOYMENT_NAME
         )
-    
         return response.data[0].embedding
 
     if __name__ == "__main__":
@@ -309,13 +317,19 @@ To test the `generate_embeddings` function in the `main.py` file, you will add a
 
 Using the Azure Cosmos DB SDK for Python, you can create a function that allows upserting documents into your database. An upsert operation will update a record if a match is found and insert a new record if one is not.
 
-1. In the `main.py` file in the `api/app` folder, import the `CosmosClient` class from the Azure Cosmos DB SDK for Python by inserting the following line just below the `import` statements already in the file:
+1. Return to the open `main.py` file in Visual Studio Code and import the `CosmosClient` class from the Azure Cosmos DB SDK for Python by inserting the following line just below the `import` statements already in the file:
 
     ```python
     from azure.cosmos import CosmosClient
     ```
 
-2. Create a new group of variables containing configuration values associated with Azure Cosmos DB and add them to the `main.py` file below the Azure OpenAI variables you inserted previously. Ensure you replace the `<AZURE_COSMOSDB_ENDPOINT>` token with the endpoint for your Azure Cosmos DB account.
+2. Add another import statement to reference the `Product` class from the **models** module in the `api/app` folder. The `Product` class defines the shape of products in the Cosmic Works dataset.
+
+    ```python
+    from models import Product
+    ```
+
+3. Create a new group of variables containing configuration values associated with Azure Cosmos DB and add them to the `main.py` file below the Azure OpenAI variables you inserted previously. Ensure you replace the `<AZURE_COSMOSDB_ENDPOINT>` token with the endpoint for your Azure Cosmos DB account.
 
     ```python
     # Azure Cosmos DB configuration
@@ -324,27 +338,37 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
     CONTAINER_NAME = "Products"
     ```
 
-3. Add a function for upserting documents into Cosmos DB, inserting the following code below the `generate_embeddings` function in the `main.py` file:
+4. Create an Azure Cosmos DB client, adding the following code below the `aoai_client` code block:
 
     ```python
-    def upsert_document(document: dict):
-        # Create a Cosmos DB client
-        cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
-        # Load the CosmicWorks database
-        database = cosmos_client.get_database_client(DATABASE_NAME)
-        # Retrieve the product container
-        container = database.get_container_client(CONTAINER_NAME)
-    
-        # Upsert the document
-        container.upsert_item(document)
+    # Create a Cosmos DB client
+    cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
     ```
 
-4. Save the `main.py` file, which should now look like:
+5. Just below the `cosmos_client`, load the **CosmicWorks** database and get a reference to the **Products** container.
+
+    ```python
+    # Load the CosmicWorks database
+    database = cosmos_client.get_database_client(DATABASE_NAME)
+    # Retrieve the product container
+    container = database.get_container_client(CONTAINER_NAME)
+    ```
+
+6. Add a function for upserting documents into Cosmos DB, inserting the following code below the `generate_embeddings` function in the `main.py` file:
+
+    ```python
+    def upsert_product(product: Product):
+        # Upsert the product
+        container.upsert_item(product)
+    ```
+
+7. Save the `main.py` file, which should now look like:
 
     ```python
     from openai import AzureOpenAI
     from azure.identity import DefaultAzureCredential, get_bearer_token_provider
     from azure.cosmos import CosmosClient
+    from models import Product
     
     # Azure OpenAI configuration
     AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
@@ -363,30 +387,29 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
         "https://cognitiveservices.azure.com/.default"
     )
     
-    def generate_embeddings(text: str, model: str = "text-embedding-3-small"):
-        client = AzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
-        )
+    aoai_client = AzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = token_provider
+    )
     
-        response = client.embeddings.create(
+    # Create a Cosmos DB client
+    cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
+    # Load the CosmicWorks database
+    database = cosmos_client.get_database_client(DATABASE_NAME)
+    # Retrieve the product container
+    container = database.get_container_client(CONTAINER_NAME)
+    
+    def generate_embeddings(text: str):
+        response = aoai_client.embeddings.create(
             input = text,
-            model = model
+            model = EMBEDDING_DEPLOYMENT_NAME
         )
-    
         return response.data[0].embedding
     
-    def upsert_document(document: dict):
-        # Create a Cosmos DB client
-        cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
-        # Load the CosmicWorks database
-        database = cosmos_client.get_database_client(DATABASE_NAME)
-        # Retrieve the product container
-        container = database.get_container_client(CONTAINER_NAME)
-    
-        # Upsert the document
-        container.upsert_item(document)
+    def upsert_product(product: Product):
+        # Upsert the product
+        container.upsert_item(product)
     
     if __name__ == "__main__":
         import sys
@@ -395,24 +418,28 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
 
 ## Vectorize sample data
 
-To test both the `generate_embeddings` and `upsert_document` functions together, you will overwrite the `if __name__ == "__main__"` statement with code that downloads a sample data file containing Cosmic Works product information from GitHub and then vectorizes the `description` field of each product, and upserts the documents into the `Products` container in your Azure Cosmos DB database.
+To test both the `generate_embeddings` and `upsert_document` functions together, you will overwrite the `if __name__ == "__main__"` main guard block with code that downloads a sample data file containing Cosmic Works product information from GitHub and then vectorizes the `description` field of each product, and upserts the documents into the `Products` container in your Azure Cosmos DB database.
 
 > &#128221; This approach is being used to demonstrate the techniques for generating with Azure OpenAI and storing embeddings in Azure Cosmos DB. In a real-world scenario, however, a more robust approach, such as using an Azure Function triggered by the Azure Cosmos DB change feed would be more appropiate for handling adding embeddings to existing and new documents.
 
-1. In the `main.py` file in the `api/app` folder, overwrite the `if __name__ == "__main__":` code block with the following:
+1. In the `main.py` file, overwrite the `if __name__ == "__main__":` code block with the following:
 
     ```python
     if __name__ == "__main__":
         from models import Product
         import requests
     
-        product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json"
-        products = [Product(**data) for data in requests.get(product_raw_data).json()]
-    
-        # Call the generate_embeddings function, passing in an argument from the command line.
+        product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json?v=1"
+        headers = {
+            "Cache-Control": "no-cache",
+        }
+        products = [Product(**data) for data in requests.get(product_raw_data, headers=headers).json()]
+        
+        # Call the generate_embeddings function, passing in an argument from the command line.    
         for product in products:
+            print(f"Generating embeddings for product: {product.name}", end="\r")
             product.embedding = generate_embeddings(product.description)
-            upsert_document(product.model_dump())
+            upsert_product(product.model_dump())
     
         print("All products with vectorized descriptions have been upserted to the Cosmos DB container.")
     ```
@@ -425,7 +452,7 @@ To test both the `generate_embeddings` and `upsert_document` functions together,
     python main.py
     ```
 
-3. Wait for the code execution to complete, indicated by a message indicating all products with vectorized descriptions have been upserted to the Cosmos DB container. It will take approximately ten minutes for the vectorization and data upsert process to complete.
+3. Wait for the code execution to complete, indicated by a message indicating all products with vectorized descriptions have been upserted to the Cosmos DB container. It may take up to five minutes for the vectorization and data upsert process to complete for the 295 records in the products dataset.
 
 ## Review upserted sample data in Cosmos DB
 
