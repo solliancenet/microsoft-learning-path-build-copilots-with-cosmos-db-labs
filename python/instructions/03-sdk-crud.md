@@ -91,6 +91,18 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
+1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
+
+    ```bash
+    pip install asyncio
+    ```
+
+1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
+
+    ```bash
+    pip install aiohttp
+    ```
+
 ## Use the azure-cosmos library
 
 Using the credentials from the newly created account, you will connect with the SDK classes and create a new database and container instance. Then, you will use the Data Explorer to validate that the instances exist in the Azure portal.
@@ -99,10 +111,17 @@ Using the credentials from the newly created account, you will connect with the 
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statement to import the **CosmosClient** class:
+1. Add the following `import` statement to import the **PartitionKey** class:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    ```
+
+1. Add the following `import` statements to import the asynchronous **CosmosClient** class and the **asyncio** library:
+
+    ```python
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
     ```
 
 1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
@@ -116,45 +135,59 @@ Using the credentials from the newly created account, you will connect with the 
 
     > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
 
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **key** variables:
 
     ```python
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
     ```
+
+    > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to create a database and container if they do not already exist:
 
     ```python
     # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    database = await client.create_database_if_not_exists(id="cosmicworks")
     
     # Create container
-    container = database.create_container_if_not_exists(
+    container = await database.create_container_if_not_exists(
         id="products",
         partition_key=PartitionKey(path="/categoryId"),
         offer_throughput=400
     )
     ```
 
+1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
+
+    ```python
+    if __name__ == "__main__":
+        asyncio.run(query_items_async())
+    ```
+
 1. Your **script.py** file should now look like this:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
+
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** the **script.py** file.
@@ -200,38 +233,42 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
 1. Invoke the [`create_item`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-create-item) method of the **container** variable passing in the **saddle** variable as the method parameter:
 
     ```python
-    container.create_item(body=saddle)
+    await container.create_item(body=saddle)
     ```
 
 1. Once you are done, your code file should now include:
   
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
+        
+            saddle = {
+                "id": "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009",
+                "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816",
+                "name": "Road Saddle",
+                "price": 45.99,
+                "tags": ["tan", "new", "crisp"]
+            }
+            
+            await container.create_item(body=saddle)
 
-    saddle = {
-        "id": "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009",
-        "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816",
-        "name": "Road Saddle",
-        "price": 45.99,
-        "tags": ["tan", "new", "crisp"]
-    }
-    
-    container.create_item(body=saddle)
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** and run the script again:
@@ -257,7 +294,7 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
         "tags": ["tan", "new", "crisp"]
     }
     
-    container.create_item(body=saddle)
+    await container.create_item(body=saddle)
     ```
 
 1. Create a string variable named **item_id** with a value of **706cd7c6-db8b-41f9-aea2-0e0c7e8eb009**:
@@ -276,8 +313,10 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
 
     ```python
     # Read item    
-    saddle = container.read_item(item=item_id, partition_key=partition_key)
+    saddle = await container.read_item(item=item_id, partition_key=partition_key)
     ```
+
+    > &#128161; The `read_item` method allows you to perform a point read operation on an item in the container. The method requires the `item` and `partition_key` parameters to identify the item to read. As opposed to executing a query using Cosmos DB's SQL query language to find the single item, the `read_item` method is more efficient and cost-effective way to retrieve a single item. Point reads can read the data directly and don't require the query engine to process the request.
 
 1. Print the saddle object using a formatted output string:
 
@@ -288,30 +327,34 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
 1. Once you are done, your code file should now include:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
+    
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
+        
+            item_id = "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009"
+            partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
+    
+            # Read item
+            saddle = await container.read_item(item=item_id, partition_key=partition_key)
+            
+            print(f'[{saddle["id"]}]\t{saddle["name"]} ({saddle["price"]})')
 
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
-    
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
-
-    item_id = "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009"
-    partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
-    
-    # Read item
-    saddle = container.read_item(item=item_id, partition_key=partition_key)
-    
-    print(f'[{saddle["id"]}]\t{saddle["name"]} ({saddle["price"]})')
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** and run the script again:
@@ -364,39 +407,43 @@ While learning the SDK, it's not uncommon to use an online Azure Cosmos DB accou
 1. Invoke the [`replace_item`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-replace-item) method of the **container** variable passing in the **item_id** and **saddle** variables as method parameters:
 
     ```python
-    container.replace_item(item=item_id, body=saddle)
+    await container.replace_item(item=item_id, body=saddle)
     ```
 
 1. Once you are done, your code file should now include:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
+
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    client = CosmosClient(endpoint, key)
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
+        
+            item_id = "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009"
+            partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
     
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+            # Read item
+            saddle = await container.read_item(item=item_id, partition_key=partition_key)
+            
+            saddle["price"] = 32.55
+            saddle["name"] = "Road LL Saddle"
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
-    
-    item_id = "706cd7c6-db8b-41f9-aea2-0e0c7e8eb009"
-    partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
-    
-    # Read item
-    saddle = container.read_item(item=item_id, partition_key=partition_key)
-    
-    saddle["price"] = 32.55
-    saddle["name"] = "Road LL Saddle"
-    
-    container.replace_item(item=item_id, body=saddle)
+            await container.replace_item(item=item_id, body=saddle)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** and run the script again:
@@ -426,19 +473,19 @@ While learning the SDK, it's not uncommon to use an online Azure Cosmos DB accou
 
     ```python
     # Read item
-    saddle = container.read_item(item=item_id, partition_key=partition_key)
+    saddle = await container.read_item(item=item_id, partition_key=partition_key)
     
     saddle["price"] = 32.55
     saddle["name"] = "Road LL Saddle"
     
-    container.replace_item(item=item_id, body=saddle)
+    await container.replace_item(item=item_id, body=saddle)
     ```
 
 1. Invoke the [`delete_item`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-delete-item) method of the **container** variable passing in the **item_id** and **partition_key** variables as method parameters:
 
     ```python
     # Delete the item
-    container.delete_item(item=item_id, partition_key=partition_key)
+    await container.delete_item(item=item_id, partition_key=partition_key)
     ```
 
 1. Save and run the script again:
