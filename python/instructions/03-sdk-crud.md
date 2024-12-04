@@ -30,13 +30,18 @@ If you have not already cloned the lab code repository for **Build copilots with
 
 ## Create an Azure Cosmos DB for NoSQL account
 
-Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support (for example, **Mongo API** or **NoSQL API**). Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
+If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#install-the-azure-cosmos-library). Otherwise, follow the steps below to create a new Azure Cosmos DB for NoSQL account.
+
+<details markdown=1>
+<summary markdown="span"><strong>Click to expand/collapse steps to create an Azure Cosmos DB for NoSQL account</strong></summary>
+
+Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support. Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
 
 1. In a new web browser window or tab, navigate to the Azure portal (``portal.azure.com``).
 
-1. Sign into the portal using the Microsoft credentials associated with your subscription.
+2. Sign into the portal using the Microsoft credentials associated with your subscription.
 
-1. Select **+ Create a resource**, search for *Cosmos DB*, and then create a new **Azure Cosmos DB for NoSQL** account resource with the following settings, leaving all remaining settings to their default values:
+3. Select **+ Create a resource**, search for *Cosmos DB*, and then create a new **Azure Cosmos DB for NoSQL** account resource with the following settings, leaving all remaining settings to their default values:
 
     | **Setting** | **Value** |
     | ---: | :--- |
@@ -44,25 +49,24 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
     | **Resource group** | *Select an existing or create a new resource group* |
     | **Account Name** | *Enter a globally unique name* |
     | **Location** | *Choose any available region* |
-    | **Capacity mode** | *Provisioned throughput* |
+    | **Capacity mode** | *Serverless* |
     | **Apply Free Tier Discount** | *Do Not Apply* |
-    | **Limit the total amount of throughput that can be provisioned on this account** | *Unchecked* |
 
     > &#128221; Your lab environments may have restrictions preventing you from creating a new resource group. If that is the case, use the existing pre-created resource group.
 
-1. Wait for the deployment task to complete before continuing with this task.
+4. Wait for the deployment task to complete before continuing with this task.
 
-1. Go to the newly created **Azure Cosmos DB** account resource and navigate to the **Keys** pane.
+5. Go to the newly created **Azure Cosmos DB** account resource and navigate to the **Keys** pane.
 
-1. This pane contains the connection details and credentials necessary to connect to the account from the SDK. Specifically:
+6. This pane contains the connection details and credentials necessary to connect to the account from the SDK. Specifically:
 
     1. Notice the **URI** field. You will use this **endpoint** value later in this exercise.
 
-    1. Notice the **PRIMARY KEY** field. You will use this **key** value later in this exercise.
+    2. Notice the **PRIMARY KEY** field. You will use this **key** value later in this exercise.
 
-1. Keep the browser tab open, as we will return to it later.
+7. Keep the browser tab open, as we will return to it later.
 
-1. Switch back to **Visual Studio Code**.
+</details>
 
 ## Install the azure-cosmos library
 

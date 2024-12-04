@@ -30,7 +30,12 @@ If you have not already cloned the lab code repository for **Build copilots with
 
 ## Create an Azure Cosmos DB for NoSQL account
 
-Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support (for example, **Mongo API** or **NoSQL API**). Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for JavaScript or any other SDK of your choice.
+If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#create-azure-cosmos-db-database-and-container-with-sample-data). Otherwise, follow the steps below to create a new Azure Cosmos DB for NoSQL account.
+
+<details markdown=1>
+<summary markdown="span"><strong>Click to expand/collapse steps to create an Azure Cosmos DB for NoSQL account</strong></summary>
+
+Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support. Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
 
 1. In a new web browser window or tab, navigate to the Azure portal (``portal.azure.com``).
 
@@ -44,9 +49,8 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
     | **Resource group** | *Select an existing or create a new resource group* |
     | **Account Name** | *Enter a globally unique name* |
     | **Location** | *Choose any available region* |
-    | **Capacity mode** | *Provisioned throughput* |
+    | **Capacity mode** | *Serverless* |
     | **Apply Free Tier Discount** | *Do Not Apply* |
-    | **Limit the total amount of throughput that can be provisioned on this account** | *Unchecked* |
 
     > &#128221; Your lab environments may have restrictions preventing you from creating a new resource group. If that is the case, use the existing pre-created resource group.
 
@@ -60,7 +64,14 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
 
     1. Notice the **PRIMARY KEY** field. You will use this **key** value later in this exercise.
 
+</details>
+
 ## Create Azure Cosmos DB database and container with sample data
+
+If you already created an Azure Cosmos DB database named **cosmicworks-full** and container within it named **products**, which is preloaded with sample data, you can use it for this lab and skip ahead to the [next section](#import-the-azurecosmos-library). Otherwise, follow the steps below to create a new sample database and container.
+
+<details markdown=1>
+<summary markdown="span"><strong>Click to expand/collapse steps to create database and container with sample data</strong></summary>
 
 1. Within the newly created **Azure Cosmos DB** account resource, navigate to the **Data Explorer** pane.
 
@@ -68,17 +79,18 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
 
 1. Within the **New Container** form, enter the following values:
 
-    - **Database id**: `cosmicworks`
+    - **Database id**: `cosmicworks-full`
     - **Container id**: `products`
     - **Partition key**: `/categoryId`
-    - **Container throughput (autoscale)**: Select `Autoscale`
-    - **Container Max RU/s**: `1000`
+    - **Analytical store**: `Off`
 
 1. Select **OK** to create the new container. This process will take a minute or two while it creates the resources and preloads the container with sample product data.
 
 1. Keep the browser tab open, as we will return to it later.
 
 1. Switch back to **Visual Studio Code**.
+
+</details>
 
 ## Import the @azure/cosmos library
 
@@ -149,7 +161,7 @@ When processing query results, you must make sure your code progresses through a
 1. Inside the **paginateResults** method, add the following code to connect to the database and container you created earlier::
 
     ```javascript
-    const database = client.database("cosmicworks");
+    const database = client.database("cosmicworks-full");
     const container = database.container("products");
     ```
 
@@ -196,7 +208,7 @@ When processing query results, you must make sure your code progresses through a
     const client = new CosmosClient({ endpoint, key });
 
     async function paginateResults() {
-        const database = client.database("cosmicworks");
+        const database = client.database("cosmicworks-full");
         const container = database.container("products");
         
         const query = "SELECT * FROM products WHERE products.price > 500";
