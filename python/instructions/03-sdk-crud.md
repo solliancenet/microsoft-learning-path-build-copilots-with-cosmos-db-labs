@@ -316,7 +316,7 @@ You will now use the set of methods in the **ContainerProxy** class to perform c
     saddle = await container.read_item(item=item_id, partition_key=partition_key)
     ```
 
-    > &#128161; The `read_item` method allows you to perform a point read operation on an item in the container. The method requires the `item` and `partition_key` parameters to identify the item to read. As opposed to executing a query using Cosmos DB's SQL query language to find the single item, the `read_item` method is more efficient and cost-effective way to retrieve a single item. Point reads can read the data directly and don't require the query engine to process the request.
+    > &#128161; The `read_item` method allows you to perform a point read operation on an item in the container. The method requires the `item_id` and `partition_key` parameters to identify the item to read. As opposed to executing a query using Cosmos DB's SQL query language to find the single item, the `read_item` method is more efficient and cost-effective way to retrieve a single item. Point reads can read the data directly and don't require the query engine to process the request.
 
 1. Print the saddle object using a formatted output string:
 

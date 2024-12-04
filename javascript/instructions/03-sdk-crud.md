@@ -296,6 +296,8 @@ You will now use the set of methods in the **Container** class to perform common
     const { resource: saddle } = await container.item(itemId, partitionKey).read();
     ```
 
+    > &#128161; The `read` method allows you to perform a point read operation on an item in the container. The method requires the `itemId` and `partitionKey` parameters to identify the item to read. As opposed to executing a query using Cosmos DB's SQL query language to find the single item, the `read` method is more efficient and cost-effective way to retrieve a single item. Point reads can read the data directly and don't require the query engine to process the request.
+
 1. Print the saddle object using a formatted output string:
 
     ```javascript
