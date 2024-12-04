@@ -14,8 +14,6 @@ Azure Cosmos DB for NoSQL provides an efficient vector indexing and search capab
 
 In this lab, you will create an Azure Cosmos DB for NoSQL account and enable the Vector Search feature on it in order to prepare a database for use as a vector store.
 
-> &#128721; If you have not completed the previous exercise in this module, please go back and finish it before continuing, as it provides the necessary infrastructure for this lab.
-
 ## Prepare your development environment
 
 If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** to the environment where you're working on this lab, follow these steps to do so. Otherwise, open the previously cloned folder in **Visual Studio Code**.
@@ -32,7 +30,12 @@ If you have not already cloned the lab code repository for **Build copilots with
 
 ## Create an Azure Cosmos DB for NoSQL account
 
-Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support (for example, **Mongo API** or **NoSQL API**). Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve it endpoint and use it to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
+If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#enable-vector-search-for-nosql-api). Otherwise, follow the steps below to create a new Azure Cosmos DB for NoSQL account.
+
+<details markdown=1>
+<summary markdown="span"><strong>Click to expand/collapse steps to create an Azure Cosmos DB for NoSQL account</strong></summary>
+
+Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support. Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
 
 1. In a new web browser window or tab, navigate to the Azure portal (``portal.azure.com``).
 
@@ -46,13 +49,14 @@ Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple A
     | **Resource group** | *Select an existing or create a new resource group* |
     | **Account Name** | *Enter a globally unique name* |
     | **Location** | *Choose any available region* |
-    | **Capacity mode** | *Provisioned throughput* |
+    | **Capacity mode** | *Serverless* |
     | **Apply Free Tier Discount** | *Do Not Apply* |
-    | **Limit the total amount of throughput that can be provisioned on this account** | *Unchecked* |
 
     > &#128221; Your lab environments may have restrictions preventing you from creating a new resource group. If that is the case, use the existing pre-created resource group.
 
 4. Wait for the deployment task to complete before continuing with the next task.
+
+</details>
 
 ## Enable Vector Search for NoSQL API
 
@@ -85,13 +89,12 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
    1. Under **Database id**, select **Create new** and enter "CosmicWorks" into the database id field.
    2. In the **Container id** box, enter the name "Products."
    3. Assign "/category_id" as the **Partition key.**
-   4. Ensure the **Container throughput** is set to **Autoscale** with a max RU/s of 4000.
 
       ![Screenshot of the New Container settings specified above entered into the dialog.](media/07-azure-cosmos-db-new-container.png)
 
-   5. Scroll to the bottom of the **New Container** dialog, expand **Container Vector Policy**, and select **Add vector embedding**.
+   4. Scroll to the bottom of the **New Container** dialog, expand **Container Vector Policy**, and select **Add vector embedding**.
 
-   6. In the **Container Vector Policy** settings section, set the following:
+   5. In the **Container Vector Policy** settings section, set the following:
 
       | Setting | Value |
       | ------- | ----- |
@@ -101,13 +104,13 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
       | **Dimensions** | Enter *1536* to match the number of dimensions produced by OpenAI's `text-embedding-3-small` model. |
       | **Index type** | Select *diskANN*. |
       | **Quantization byte size** | Leave this blank. |
-      | **Indexing search list size** | Enter *100*. |
+      | **Indexing search list size** | Accept the default value of *100*. |
 
       ![Screenshot of the Container Vector Policy specified above entered into the New Container dialog.](media/07-azure-cosmos-db-container-vector-policy.png)
 
-   7. Select **OK** to create the database and container.
+   6. Select **OK** to create the database and container.
 
-### Provide your user identity the Cosmos DB Built-in Data Contributor RBAC role
+## Provide your user identity the Cosmos DB Built-in Data Contributor RBAC role
 
 As the final task in this exercise, you will grant your Microsoft Entra ID user identity access to manage data in your Azure Cosmos DB for NoSQL account by assigning it to the **Cosmos DB Built-in Data Contributor** RBAC role. This will allow you use Azure authentication to access the database from Python code, and avoid needing to store and manage keys.
 
