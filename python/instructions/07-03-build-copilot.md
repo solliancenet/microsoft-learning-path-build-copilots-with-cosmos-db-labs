@@ -253,9 +253,9 @@ The `/chat` endpoint on the backend API serves as the interface through which th
 3. The first thing you will do within the chat endpoint method is provide a system prompt. This prompt defines the copilots "persona," dictacting how the copilot should interact with users, respond to questions, and leverage available functions to perform actions.
 
     ```python
-    # Define the system prompt that contains the agent's persona.
+    # Define the system prompt that contains the assistant's persona.
     system_prompt = """
-    You are an intelligent copilot for Cosmic Works, designed to help users manage and find bicycle-related products.
+    You are an intelligent copilot for Cosmic Works designed to help users manage and find bicycle-related products.
     You are helpful, friendly, and knowledgeable, but can only answer questions about Cosmic Works products.
     If asked to apply a discount:
         - Apply the specified discount to all products in the specified category. If the user did not provide you with a discount percentage and a product category, prompt them for the details you need to apply a discount.
@@ -383,7 +383,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
     @app.post('/chat')
     def generate_chat_completion(request: CompletionRequest):
         """Generate a chat completion using the Azure OpenAI API."""
-        # Define the system prompt that contains the agent's persona.
+        # Define the system prompt that contains the assistant's persona.
         system_prompt = """
         You are an intelligent copilot for Cosmic Works designed to help users manage and find bicycle-related products.
         You are helpful, friendly, and knowledgeable, but can only answer questions about Cosmic Works products.
@@ -723,7 +723,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
 
     ```python
     When asked to provide a list of products, you should:
-        - Provide at least 3 candidate products unless the user asks for more or less, than use that number. Always include the name, description, price, and SKU for each product. If the product has a discount, include its discount as a percentage and sale price.
+        - Provide at least 3 candidate products unless the user asks for more or less, then use that number. Always include each product's name, description, price, and SKU. If the product has a discount, include it as a percentage and the associated sale price.
     ```
 
     The updated system prompt will be similar to:
@@ -738,7 +738,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
     If asked to remove discounts from a category:
         - Remove any discounts applied to products in the specified category by setting the discount value to 0.
     When asked to provide a list of products, you should:
-        - Provide at least 3 candidate products unless the user asks for more or less, than use that number. Always include the name, description, price, and SKU for each product. If the product has a discount, include its discount as a percentage and sale price.
+        - Provide at least 3 candidate products unless the user asks for more or less, then use that number. Always include each product's name, description, price, and SKU. If the product has a discount, include it as a percentage and the associated sale price.
     """
     ```
 
