@@ -14,6 +14,8 @@ Azure OpenAI provides access to OpenAI's advanced language models, including the
 
 In this lab, you will create an Azure OpenAI service and deploy an embedding model. You will then use Python code to create Azure OpenAI and Cosmos DB clients using their respective Python SDKs to generate vector representations of product descriptions and write them into your database.
 
+> &#128721; The previous exercise in this module is a prerequisite for this lab. If you still need to complete that exercise, please finish it before continuing, as it provides the infrastructure required for this lab.
+
 ## Create an Azure OpenAI service
 
 Azure OpenAI provides REST API access to OpenAI's powerful language models. These models can be easily adapted to your specific task including but not limited to content generation, summarization, image understanding, semantic search, and natural language to code translation.
@@ -94,9 +96,11 @@ To allow your user identity to interact with the Azure OpenAI service, you can a
 
 Virtual environments in Python are essential for maintaining a clean and organized development space, allowing individual projects to have their own set of dependencies, isolated from others. This prevents conflicts between different projects and ensures consistency in your development workflow. By using virtual environments, you can manage package versions easily, avoid dependency clashes, and keep your projects running smoothly. It's a best practice that keeps your coding environment stable and dependable, making your development process more efficient and less prone to issues.
 
-1. In Visual Studio Code, open a new terminal window and change directories to the `python/07-build-copilot` folder.
+1. Using Visual Studio Code, open the folder into which you cloned the lab code repository for **Build copilots with Azure Cosmos DB** learning module.
 
-2. Create a virtual environment named `.venv` by running the following command at the terminal prompt:
+2. In Visual Studio Code, open a new terminal window and change directories to the `python/07-build-copilot` folder.
+
+3. Create a virtual environment named `.venv` by running the following command at the terminal prompt:
 
     ```bash
     python -m venv .venv 
@@ -104,7 +108,7 @@ Virtual environments in Python are essential for maintaining a clean and organiz
 
     The able command will create a `.venv` folder under the `07-build-copilot` folder, which will provide a dedicated Python environment for the exercises in this lab.
 
-3. Activate the virtual environment by selecting the appropriate command for your OS and shell from the table below and executing it at the terminal prompt.
+4. Activate the virtual environment by selecting the appropriate command for your OS and shell from the table below and executing it at the terminal prompt.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -115,7 +119,7 @@ Virtual environments in Python are essential for maintaining a clean and organiz
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-4. Install the libraries defined in `requirements.txt`:
+5. Install the libraries defined in `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
