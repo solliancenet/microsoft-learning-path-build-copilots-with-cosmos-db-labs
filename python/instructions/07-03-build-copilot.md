@@ -18,7 +18,7 @@ In this lab, you will build a copilot using Python and Azure Cosmos DB for NoSQL
 
 Separating app functionality into a dedicated UI and backend API when creating a copilot in Python offers several benefits. Firstly, it enhances modularity and maintainability, allowing you to update the UI or backend independently without disrupting the other. Streamlit provides an intuitive and interactive interface that simplifies user interactions, while FastAPI ensures high-performance, asynchronous request handling and data processing. This separation also promotes scalability, as different components can be deployed across multiple servers, optimizing resource usage. Additionally, it enables better security practices, as the backend API can handle sensitive data and authentication separately, reducing the risk of exposing vulnerabilities in the UI layer. This approach leads to a more robust, efficient, and user-friendly application.
 
-> &#128721; If you still need to complete the previous two exercises in this module, please finish them before continuing, as they provide the necessary infrastructure and starter code for this lab.
+> &#128721; The previous exercises in this module are prerequisites for this lab. If you still need to complete any of those exercises, please finish them before continuing, as they provide the necessary infrastructure and starter code for this lab.
 
 ## Construct a backend API
 
@@ -26,28 +26,30 @@ The backend API for the copilot enriches its abilities to handle intricate data,
 
 > &#128721; The backend API builds upon the code you added to the `main.py` file in the `python/07-build-copilot/api/app` folder in the previous exercise. If you have not yet finished the previous exercise, please complete it before continuing.
 
-1. In the **Explorer** pane within Visual Studio Code, browse to the **python/07-build-copilot/api/app** folder and open the `main.py` file found within it.
+1. Using Visual Studio Code, open the folder into which you cloned the lab code repository for **Build copilots with Azure Cosmos DB** learning module.
 
-2. Add the following lines of code below the existing `import` statements at the top of the `main.py` file:
+2. In the **Explorer** pane within Visual Studio Code, browse to the **python/07-build-copilot/api/app** folder and open the `main.py` file found within it.
+
+3. Add the following lines of code below the existing `import` statements at the top of the `main.py` file:
 
     ```python
     from fastapi import FastAPI
     import json
     ```
 
-3. To enable the `/chat` endpoint you will create to receive data in the request body, you will pass content in via a `CompletionRequest` object defined in the projects *models* module. Update the `from models import Product` import statement at the top of the file to include the `CompletionRequest` class from the `models` module. The import statement should now look like this:
+4. To enable the `/chat` endpoint you will create to receive data in the request body, you will pass content in via a `CompletionRequest` object defined in the projects *models* module. Update the `from models import Product` import statement at the top of the file to include the `CompletionRequest` class from the `models` module. The import statement should now look like this:
 
     ```python
     from models import Product, CompletionRequest
     ```
 
-4. You will need the deployment name of the chat completion model you created in your Azure OpenAI Service. Create a variable at the bottom of the Azure OpenAI configuration variable block to provide this:
+5. You will need the deployment name of the chat completion model you created in your Azure OpenAI Service. Create a variable at the bottom of the Azure OpenAI configuration variable block to provide this:
 
     ```python
     COMPLETION_DEPLOYMENT_NAME = 'gpt-4o'
     ```
 
-5. Create an instance of the FastAPI class using the following code, which should be inserted below the Azure Cosmos DB configuration variable block near the top of the `main.py` file:
+6. Create an instance of the FastAPI class using the following code, which should be inserted below the Azure Cosmos DB configuration variable block near the top of the `main.py` file:
 
     ```python
     app = FastAPI()
@@ -55,7 +57,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
 
     By calling `FastAPI()`, you are initializing a new instance of the FastAPI application. This instance, referred to as `app`, will serve as the main entry point for your web application.
 
-6. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
+7. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
 
     ```python
     @app.get("/")
@@ -69,7 +71,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
         raise NotImplementedError("The chat endpoint is not implemented yet.")
     ```
 
-7. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
+8. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
 
     ```python
     if __name__ == "__main__":
@@ -77,7 +79,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
         uvicorn.run(app, host="0.0.0.0", port=8000)
     ```
 
-8. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
+9. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
 
     ```python
     from openai import AzureOpenAI
@@ -146,19 +148,19 @@ The backend API for the copilot enriches its abilities to handle intricate data,
         uvicorn.run(app, host="0.0.0.0", port=8000)
     ```
 
-9. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
+10. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
 
-10. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
+11. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
 
     ```azurecli
     az login
     ```
 
-11. Complete the login process in your browser.
+12. Complete the login process in your browser.
 
-12. Change directories to `python/07-build-copilot` at the terminal prompt.
+13. Change directories to `python/07-build-copilot` at the terminal prompt.
 
-13. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
+14. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -169,21 +171,21 @@ The backend API for the copilot enriches its abilities to handle intricate data,
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-14. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
+15. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
 
     ```bash
     uvicorn main:app
     ```
 
-15. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>. 
+16. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>.
 
     A message of `{"status":"ready"}` in the browser window indicates your API is running.
 
-16. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
+17. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
 
     > &#128221; The Swagger UI is an interactive, web-based interface for exploring and testing API endpoints generated from OpenAPI specifications. It allows developers and users to visualize, interact with, and debug real-time API calls, enhancing usability and documentation.
 
-17. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
+18. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
 
 ## Incorporate product data from Azure Cosmos DB
 
@@ -246,7 +248,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
         raise NotImplementedError("The chat endpoint is not implemented yet.")
     ```
 
-    The function accepts a `CompletionRequest` as a parameter. Utilizing a class for the input parameter allows multiple properties to be passed into the API endpoint in the request body. The `CompletionRequest` class is defined within the *models* module and includes user message and chat history properties. The chat history allows the copilot to reference previous aspects of the conversation with the user, so it maintains knowledge of the context of the entire discussion.
+    The function accepts a `CompletionRequest` as a parameter. Utilizing a class for the input parameter allows multiple properties to be passed into the API endpoint in the request body. The `CompletionRequest` class is defined within the *models* module and includes user message, chat history, and max history properties. The chat history allows the copilot to reference previous aspects of the conversation with the user, so it maintains knowledge of the context of the entire discussion.
 
 2. To start, delete the `raise NotImplementedError("The chat endpoint is not implemented yet.")` line from the function as you are beginning the process of implementing the endpoint.
 
@@ -272,7 +274,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
     messages = [{"role": "system", "content": system_prompt }]
     
     # Add the chat history to the messages list
-    for message in request.chat_history:
+    for message in request.chat_history[-request.max_history:]:
         messages.append(message)
     
     # Add the current user message to the messages list
@@ -397,7 +399,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
         messages = [{ "role": "system", "content": system_prompt }]
     
         # Add the chat history to the messages list
-        for message in request.chat_history:
+        for message in request.chat_history[-request.max_history:]:
             messages.append(message)
     
         # Add the current user message to the messages list
@@ -634,7 +636,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
 
     ```python
     def get_similar_products(message: str, num_results: int):
-        """Get similar products based on the user's message"""
+        """Retrieve similar products based on a user message."""
         # Vectorize the user message
         embedding = generate_embeddings(message)
         # Perform vector search against products in Cosmos DB
@@ -651,7 +653,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
         "type": "function",
         "function": {
             "name": "get_similar_products",
-            "description": "Get similar products based on the user's message",
+            "description": "Retrieve similar products based on a user message.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -721,7 +723,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
 
 5. Lastly, you need to update the system prompt definition to provide instructions on how to perform vector searches. Insert the following at the bottom of the `system_prompt`:
 
-    ```python
+    ```plaintext
     When asked to provide a list of products, you should:
         - Provide at least 3 candidate products unless the user asks for more or less, then use that number. Always include each product's name, description, price, and SKU. If the product has a discount, include it as a percentage and the associated sale price.
     ```
