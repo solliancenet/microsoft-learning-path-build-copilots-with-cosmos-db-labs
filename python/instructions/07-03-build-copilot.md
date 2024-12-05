@@ -30,9 +30,10 @@ The backend API for the copilot enriches its abilities to handle intricate data,
 
 2. In the **Explorer** pane within Visual Studio Code, browse to the **python/07-build-copilot/api/app** folder and open the `main.py` file found within it.
 
-3. Add the following lines of code below the existing `import` statements at the top of the `main.py` file:
+3. Add the following lines of code below the existing `import` statements at the top of the `main.py` file to bring in the libraries that will be used to perform asychronous actions using FastAPI:
 
     ```python
+    from contextlib import asynccontextmanager
     from fastapi import FastAPI
     import json
     ```
@@ -49,29 +50,65 @@ The backend API for the copilot enriches its abilities to handle intricate data,
     COMPLETION_DEPLOYMENT_NAME = 'gpt-4o'
     ```
 
-6. Create an instance of the FastAPI class using the following code, which should be inserted below the Azure Cosmos DB configuration variable block near the top of the `main.py` file:
+    If your completion deployment name differs, update the value assigned to the variable accordingly.
+
+6. The Azure Cosmos DB and Identity SDKs provide async methods for working with those services. Each of these classes will used in multiple functions in your API, so you will create global instances of each, allowing the same client to be shared across methods. Insert the following global variable declarations below the Cosmos DB configuration variables block:
 
     ```python
-    app = FastAPI()
+    # Create a global async Cosmos DB client
+    cosmos_client = None
+    # Create a global async Microsoft Entra ID RBAC credential
+    credential = None
     ```
 
-    By calling `FastAPI()`, you are initializing a new instance of the FastAPI application. This instance, referred to as `app`, will serve as the main entry point for your web application.
+7. Delete the following lines of code from the file, as the functionality provided will be moved into the `lifespan` function you will define in the next step:
 
-7. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
+    ```python
+    # Enable Microsoft Entra ID RBAC authentication
+    credential = DefaultAzureCredential()
+    ```
+
+8. To create singleton instances of the `CosmosClient` and `DefaultAzureCredentail` classes, you will take advantage of the `lifespan` object in FastAPI: This method manages those classes through the lifecycle of the API app. Insert the following code to define the `lifespan`:
+
+    ```python
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        global cosmos_client
+        global credential
+        # Create an async Microsoft Entra ID RBAC credential
+        credential = DefaultAzureCredential()
+        # Create an async Cosmos DB client using Microsoft Entra ID RBAC authentication
+        cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
+        yield
+        await cosmos_client.close()
+        await credential.close()
+    ```
+
+    In FastAPI, lifespan events are special operations that run at the beginning and end of the application's life cycle. These operations execute before the app starts handling requests and after it stops, making them ideal for initializing and cleaning up resources that are used across the entire application and shared between requests. This approach ensures that necessary setup is completed before any requests are processed and that resources are properly managed when shutting down.
+
+9. Create an instance of the FastAPI class using the following code. This should be inserted below the `lifespan` function:
+
+    ```python
+    app = FastAPI(lifespan=lifespan)
+    ```
+
+    By calling `FastAPI()`, you are initializing a new instance of the FastAPI application. This instance, referred to as `app`, will serve as the main entry point for your web application. Passing in the `lifespan` attaches the lifespan event handler to your app.
+
+10. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
 
     ```python
     @app.get("/")
-    def api_status():
+    async def api_status():
         """Display a status message for the API"""
         return {"status": "ready"}
     
     @app.post('/chat')
-    def generate_chat_completion(request: CompletionRequest):
+    async def generate_chat_completion(request: CompletionRequest):
         """Generate a chat completion using the Azure OpenAI API."""
         raise NotImplementedError("The chat endpoint is not implemented yet.")
     ```
 
-8. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
+11. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
 
     ```python
     if __name__ == "__main__":
@@ -79,13 +116,14 @@ The backend API for the copilot enriches its abilities to handle intricate data,
         uvicorn.run(app, host="0.0.0.0", port=8000)
     ```
 
-9. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
+12. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
 
     ```python
-    from openai import AzureOpenAI
-    from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-    from azure.cosmos import CosmosClient
+    from openai import AsyncAzureOpenAI
+    from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
+    from azure.cosmos.aio import CosmosClient
     from models import Product, CompletionRequest
+    from contextlib import asynccontextmanager
     from fastapi import FastAPI
     import json
     
@@ -100,67 +138,76 @@ The backend API for the copilot enriches its abilities to handle intricate data,
     DATABASE_NAME = "CosmicWorks"
     CONTAINER_NAME = "Products"
     
-    app = FastAPI()
+    # Create a global async Cosmos DB client
+    cosmos_client = None
+    # Create a global async Microsoft Entra ID RBAC credential
+    credential = None
     
-    # Enable Microsoft Entra ID RBAC authentication
-    credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential,
-        "https://cognitiveservices.azure.com/.default"
-    )
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        global cosmos_client
+        global credential
+        # Create an async Microsoft Entra ID RBAC credential
+        credential = DefaultAzureCredential()
+        # Create an async Cosmos DB client using Microsoft Entra ID RBAC authentication
+        cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
+        yield
+        await cosmos_client.close()
+        await credential.close()
     
-    # Create Azure OpenAI client
-    aoai_client = AzureOpenAI(
-        api_version = AZURE_OPENAI_API_VERSION,
-        azure_endpoint = AZURE_OPENAI_ENDPOINT,
-        azure_ad_token_provider = token_provider
-    )
-    
-    # Create a Cosmos DB client
-    cosmos_client = CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential)
-    # Load the CosmicWorks database
-    database = cosmos_client.get_database_client(DATABASE_NAME)
-    # Retrieve the product container
-    container = database.get_container_client(CONTAINER_NAME)
+    app = FastAPI(lifespan=lifespan)
     
     @app.get("/")
-    def api_status():
+    async def api_status():
         return {"status": "ready"}
     
     @app.post('/chat')
-    def generate_chat_completion(request: CompletionRequest):
+    async def generate_chat_completion(request: CompletionRequest):
         """ Generate a chat completion using the Azure OpenAI API."""
         raise NotImplementedError("The chat endpoint is not implemented yet.")
     
-    def generate_embeddings(text: str):
-        response = aoai_client.embeddings.create(
-            input = text,
-            model = EMBEDDING_DEPLOYMENT_NAME
-        )
-        return response.data[0].embedding
+    async def generate_embeddings(text: str):
+        # Create Azure OpenAI client
+        async with AsyncAzureOpenAI(
+            api_version = AZURE_OPENAI_API_VERSION,
+            azure_endpoint = AZURE_OPENAI_ENDPOINT,
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+        ) as client:
+            response = await client.embeddings.create(
+                input = text,
+                model = EMBEDDING_DEPLOYMENT_NAME
+            )
+            return response.data[0].embedding
     
-    def upsert_product(product: Product):
-        # Upsert the product
-        container.upsert_item(product)
+    async def upsert_product(product: Product):
+        """Upserts the provided product to the Cosmos DB container."""
+        # Create an async Cosmos DB client
+        async with CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential) as client:
+            # Load the CosmicWorks database
+            database = client.get_database_client(DATABASE_NAME)
+            # Retrieve the product container
+            container = database.get_container_client(CONTAINER_NAME)
+            # Upsert the product
+            await container.upsert_item(product)
     
     if __name__ == "__main__":
         import uvicorn
         uvicorn.run(app, host="0.0.0.0", port=8000)
     ```
 
-10. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
+13. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
 
-11. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
+14. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
 
     ```azurecli
     az login
     ```
 
-12. Complete the login process in your browser.
+15. Complete the login process in your browser.
 
-13. Change directories to `python/07-build-copilot` at the terminal prompt.
+16. Change directories to `python/07-build-copilot` at the terminal prompt.
 
-14. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
+17. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -171,21 +218,21 @@ The backend API for the copilot enriches its abilities to handle intricate data,
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-15. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
+18. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
 
     ```bash
     uvicorn main:app
     ```
 
-16. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>.
+19. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>.
 
     A message of `{"status":"ready"}` in the browser window indicates your API is running.
 
-17. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
+20. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
 
     > &#128221; The Swagger UI is an interactive, web-based interface for exploring and testing API endpoints generated from OpenAPI specifications. It allows developers and users to visualize, interact with, and debug real-time API calls, enhancing usability and documentation.
 
-18. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
+21. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
 
 ## Incorporate product data from Azure Cosmos DB
 
@@ -193,26 +240,30 @@ By leveraging data from Azure Cosmos DB, the copilot can streamline complex work
 
 Functions will allow the product management copilot to apply discounts to products within a category. These functions will be the mechanism through which the copilot retrieves and interacts with Cosmic Works product data from Azure Cosmos DB.
 
-1. The copilot will use a function named `apply_discount` to add and remove discounts and sale prices on products within a specified category. Insert the following function code below the `upsert_product` function near the bottom of the `main.py` file:
+1. The copilot will use an async function named `apply_discount` to add and remove discounts and sale prices on products within a specified category. Insert the following function code below the `upsert_product` function near the bottom of the `main.py` file:
 
     ```python
-    def apply_discount(discount: float, product_category: str) -> str:
+    async def apply_discount(discount: float, product_category: str) -> str:
         """Apply a discount to products in the specified category."""
-        results = container.query_items(
+        # Load the CosmicWorks database
+        database = cosmos_client.get_database_client(DATABASE_NAME)
+        # Retrieve the product container
+        container = database.get_container_client(CONTAINER_NAME)
+    
+        query_results = container.query_items(
             query = """
             SELECT * FROM Products p WHERE CONTAINS(LOWER(p.category_name), LOWER(@product_category))
             """,
             parameters = [
                 {"name": "@product_category", "value": product_category}
-            ],
-            enable_cross_partition_query = True
+            ]
         )
     
         # Apply the discount to the products
-        for item in results:
+        async for item in query_results:
             item['discount'] = discount
             item['sale_price'] = item['price'] * (1 - discount) if discount > 0 else item['price']
-            container.upsert_item(item)
+            await container.upsert_item(item)
     
         return f"A {discount}% discount was successfully applied to {product_category}." if discount > 0 else f"Discounts on {product_category} removed successfully."
     ```
@@ -222,12 +273,19 @@ Functions will allow the product management copilot to apply discounts to produc
 2. Next, you will add a second function named `get_category_names`, which the copilot will call to assist it in knowing what product categories are available when applying or removing discounts from products. Add the below method below the `apply_discount` function in the file:
 
     ```python
-    def get_category_names() -> list:
+    async def get_category_names() -> list:
         """Retrieve the names of all product categories."""
-        categories = container.query_items(
-            query = "SELECT DISTINCT VALUE p.category_name FROM Products p",
-            enable_cross_partition_query = True
+        # Load the CosmicWorks database
+        database = cosmos_client.get_database_client(DATABASE_NAME)
+        # Retrieve the product container
+        container = database.get_container_client(CONTAINER_NAME)
+        # Get distinct product categories
+        query_results = container.query_items(
+            query = "SELECT DISTINCT VALUE p.category_name FROM Products p"
         )
+        categories = []
+        async for category in query_results:
+            categories.append(category)
         return list(categories)
     ```
 
@@ -243,12 +301,12 @@ The `/chat` endpoint on the backend API serves as the interface through which th
 
     ```python
     @app.post('/chat')
-    def generate_chat_completion(request: CompletionRequest):
+    async def generate_chat_completion(request: CompletionRequest):
         """Generate a chat completion using the Azure OpenAI API."""
         raise NotImplementedError("The chat endpoint is not implemented yet.")
     ```
 
-    The function accepts a `CompletionRequest` as a parameter. Utilizing a class for the input parameter allows multiple properties to be passed into the API endpoint in the request body. The `CompletionRequest` class is defined within the *models* module and includes user message, chat history, and max history properties. The chat history allows the copilot to reference previous aspects of the conversation with the user, so it maintains knowledge of the context of the entire discussion.
+    The function accepts a `CompletionRequest` as a parameter. Utilizing a class for the input parameter allows multiple properties to be passed into the API endpoint in the request body. The `CompletionRequest` class is defined within the *models* module and includes user message, chat history, and max history properties. The chat history allows the copilot to reference previous aspects of the conversation with the user, so it maintains knowledge of the context of the entire discussion. The `max_history` property allows you to define the number of history messages should be passed into the context of the LLM. This enables you to control token usages for your prompt and avoid TPM limits on requests.
 
 2. To start, delete the `raise NotImplementedError("The chat endpoint is not implemented yet.")` line from the function as you are beginning the process of implementing the endpoint.
 
@@ -315,11 +373,22 @@ The `/chat` endpoint on the backend API serves as the interface through which th
 
     By using function definitions, Azure OpenAI ensures that interactions between the AI and external systems are well-organized, secure, and efficient. This structured approach allows the AI to perform complex tasks seamlessly and reliably, enhancing its overall capabilities and user experience.
 
-6. The chat endpoint will make two calls to Azure OpenAI to leverage function calling. The first provides the Azure OpenAI client access to the tools:
+6. Create an async Azure OpenAI client for making requests to your chat completion model:
+
+    ```python
+    # Create Azure OpenAI client
+    aoai_client = AsyncAzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+    )
+    ```
+
+7. The chat endpoint will make two calls to Azure OpenAI to leverage function calling. The first provides the Azure OpenAI client access to the tools:
 
     ```python
     # First API call, providing the model to the defined functions
-    response = aoai_client.chat.completions.create(
+    response = await aoai_client.chat.completions.create(
         model = COMPLETION_DEPLOYMENT_NAME,
         messages = messages,
         tools = tools,
@@ -331,7 +400,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
     messages.append(response_message)
     ```
 
-7. After the first call the Azure OpenaAI, you must include code to process the function call outputs, inserting them into the conversation history so the LLM can use them to formulate a response over the data contained within those outputs:
+8. The response from this first call contains information from the LLM about what tools or functions it has determined are necessary to respond to the request. You must include code to process the function call outputs, inserting them into the conversation history so the LLM can use them to formulate a response over the data contained within those outputs:
 
     ```python
     # Handle function call outputs
@@ -363,27 +432,27 @@ The `/chat` endpoint on the backend API serves as the interface through which th
 
     Function calling in Azure OpenAI allows the seamless integration of external APIs or tools directly into your model's output. When the model detects a relevant request, it constructs a JSON object with the necessary parameters, which you then execute. The result is returned to the model, enabling it to deliver a comprehensive final response enriched with external data.
 
-8. To complete the request with the enriched data from Azure Cosmos DB, you need to send a second request to Azure OpenAI to generate a completion:
+9. To complete the request with the enriched data from Azure Cosmos DB, you need to send a second request to Azure OpenAI to generate a completion:
 
     ```python
     # Second API call, asking the model to generate a response
-    final_response = aoai_client.chat.completions.create(
+    final_response = await aoai_client.chat.completions.create(
         model = COMPLETION_DEPLOYMENT_NAME,
         messages = messages
     )
     ```
 
-9. Finally, return the completion response to the UI:
+10. Finally, return the completion response to the UI:
 
     ```python
     return final_response.choices[0].message.content
     ```
 
-10. Save the `main.py` file. The `/chat` endpoint's `generate_chat_completion` method should look like this:
+11. Save the `main.py` file. The `/chat` endpoint's `generate_chat_completion` method should look like this:
 
     ```python
     @app.post('/chat')
-    def generate_chat_completion(request: CompletionRequest):
+    async def generate_chat_completion(request: CompletionRequest):
         """Generate a chat completion using the Azure OpenAI API."""
         # Define the system prompt that contains the assistant's persona.
         system_prompt = """
@@ -430,9 +499,15 @@ The `/chat` endpoint on the backend API serves as the interface through which th
                 }
             }
         ]
+        # Create Azure OpenAI client
+        aoai_client = AsyncAzureOpenAI(
+            api_version = AZURE_OPENAI_API_VERSION,
+            azure_endpoint = AZURE_OPENAI_ENDPOINT,
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+        )
     
         # First API call, providing the model to the defined functions
-        response = aoai_client.chat.completions.create(
+        response = await aoai_client.chat.completions.create(
             model = COMPLETION_DEPLOYMENT_NAME,
             messages = messages,
             tools = tools,
@@ -447,7 +522,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
         if response_message.tool_calls:
             for call in response_message.tool_calls:
                 if call.function.name == "apply_discount":
-                    func_response = apply_discount(**json.loads(call.function.arguments))
+                    func_response = await apply_discount(**json.loads(call.function.arguments))
                     messages.append(
                         {
                             "role": "tool",
@@ -457,7 +532,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
                         }
                     )
                 elif call.function.name == "get_category_names":
-                    func_response = get_category_names()
+                    func_response = await get_category_names()
                     messages.append(
                         {
                             "role": "tool",
@@ -470,7 +545,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
             print("No function calls were made by the model.")
     
         # Second API call, asking the model to generate a response
-        final_response = aoai_client.chat.completions.create(
+        final_response = await aoai_client.chat.completions.create(
             model = COMPLETION_DEPLOYMENT_NAME,
             messages = messages
         )
@@ -500,7 +575,7 @@ The Streamlit UI provides a interface for users to interact with your copilot.
 4. The UI will interact with the backend API by using the `requests` library to make calls to the `/chat` endpoint you defined on the API. You can encapsulate the API call in a method that expects the current user message and a list of messages from the chat history.
 
     ```python
-    def send_message_to_copilot(message: str, chat_history: list = []) -> str:
+    async def send_message_to_copilot(message: str, chat_history: list = []) -> str:
         """Send a message to the Copilot chat endpoint."""
         try:
             api_endpoint = "http://localhost:8000"
@@ -515,7 +590,7 @@ The Streamlit UI provides a interface for users to interact with your copilot.
 5. Define the `main` function, which is the entry point for calls into the application.
 
     ```python
-    def main():
+    async def main():
         """Main function for the Cosmic Works Product Management Copilot UI."""
     
         st.write(
@@ -545,7 +620,7 @@ The Streamlit UI provides a interface for users to interact with your copilot.
                     st.markdown(prompt)
                 
                 # Send the user message to the copilot API
-                response = send_message_to_copilot(prompt, st.session_state.messages)            
+                response = await send_message_to_copilot(prompt, st.session_state.messages)            
     
                 # Display assistant response in chat message container
                 with st.chat_message("assistant"):
@@ -560,7 +635,8 @@ The Streamlit UI provides a interface for users to interact with your copilot.
 
     ```python
     if __name__ == "__main__":
-        main()
+        import asyncio
+        asyncio.run(main())
     ```
 
 7. Save the `index.py` file.
@@ -611,9 +687,14 @@ So far, you have given the copilot the ability to perform actions to apply disco
 1. Return to the `main.py` file in the `api/app` folder and provide a method for performing vector searches against the `Products` container in your Azure Cosmos DB account. You can insert this method below the existing functions near the bottom of the file.
 
     ```python
-    def vector_search(query_embedding: list, num_results: int = 3, similarity_score: float = 0.25):
+    async def vector_search(query_embedding: list, num_results: int = 3, similarity_score: float = 0.25):
         """Search for similar product vectors in Azure Cosmos DB"""
-        results = container.query_items(
+        # Load the CosmicWorks database
+        database = cosmos_client.get_database_client(DATABASE_NAME)
+        # Retrieve the product container
+        container = database.get_container_client(CONTAINER_NAME)
+    
+        query_results = container.query_items(
             query = """
             SELECT TOP @num_results p.name, p.description, p.sku, p.price, p.discount, p.sale_price, VectorDistance(p.embedding, @query_embedding) AS similarity_score
             FROM Products p
@@ -624,27 +705,28 @@ So far, you have given the copilot the ability to perform actions to apply disco
                 {"name": "@query_embedding", "value": query_embedding},
                 {"name": "@num_results", "value": num_results},
                 {"name": "@similarity_score", "value": similarity_score}
-            ],
-            enable_cross_partition_query = True
+            ]
         )
-        results = list(results)
-        formatted_results = [{'similarity_score': result.pop('similarity_score'), 'product': result} for result in results]
+        similar_products = []
+        async for result in query_results:
+            similar_products.append(result)
+        formatted_results = [{'similarity_score': product.pop('similarity_score'), 'product': product} for product in similar_products]
         return formatted_results
     ```
 
 2. Next, create a method named `get_similar_products` that will serve as the function used by the LLM to perform vector searches against your database:
 
     ```python
-    def get_similar_products(message: str, num_results: int):
+    async def get_similar_products(message: str, num_results: int):
         """Retrieve similar products based on a user message."""
-        # Vectorize the user message
-        embedding = generate_embeddings(message)
+        # Vectorize the message
+        embedding = await generate_embeddings(message)
         # Perform vector search against products in Cosmos DB
-        similar_products = vector_search(embedding, num_results=num_results)
+        similar_products = await vector_search(embedding, num_results=num_results)
         return similar_products
     ```
 
-    The `get_similar_products` function makes calls to the `vector_search` function you defined above, as well as the `generate_embeddings` function you created in the previous exercise. Embeddings are generated on the incoming user message to allow it to be compared to vectors stored in the database using the built-in `VectorDistance` function in Cosmos DB.
+    The `get_similar_products` function makes asynchronous calls to the `vector_search` function you defined above, as well as the `generate_embeddings` function you created in the previous exercise. Embeddings are generated on the incoming user message to allow it to be compared to vectors stored in the database using the built-in `VectorDistance` function in Cosmos DB.
 
 3. To allow the LLM to use the new functions, you must update the `tools` array you created earlier, adding a function definition for the `get_similar_products` method:
 

@@ -12,8 +12,6 @@ parent: 'Python SDK labs'
 
 LangChain's orchestration capabilities bring a multitude of benefits over implementing your copilot's LLM integration using the Azure OpenAI client directly. LangChain allows for more seamless integration with various data sources, including Azure Cosmos DB, enabling efficient vector search that enhances the retrieval process. LangChain offers robust tools for managing and optimizing workflows, making it easier to build complex applications with modular and reusable components. This flexibility not only simplifies development but also ensures scalability and maintainability.
 
-Reference this link: https://python.langchain.com/docs/integrations/vectorstores/azure_cosmos_db_no_sql/
-
 In this lab, you will enhance your copilot by transitioning your API's `/chat` endpoint from using the Azure OpenAI client to leveraging LangChain’s powerful orchestration capabilities. This shift will enable more efficient data retrieval and improved performance by integrating vector search functionality with Azure Cosmos DB for NoSQL. Whether you are looking to optimize your app's information retrieval process or simply explore the potential of RAG, this module will guide you through the seamless conversion, demonstrating how LangChain can streamline and elevate your app's capabilities. Let's embark on this journey to unlock new efficiencies and insights with LangChain and Azure Cosmos DB!
 
 > &#128721; The previous exercises in this module are prerequisites for this lab. If you still need to complete any of those exercises, please finish them before continuing, as they provide the necessary infrastructure and starter code for this lab.
@@ -60,15 +58,11 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
 1. Remove the `from openai import AzureOpenAI` import statement at the top of the `main.py` file. That client library is no longer needed, as all interactions with Azure OpenAI will go through LangChain-provided classes.
 
-2. Delete the code that creates the Azure OpenAI client. The code you are removing looks like this:
+2. Delete the following import statements at the top of the `main.py` file, as they will no longer necessary:
 
     ```python
-    # Create Azure OpenAI client
-    aoai_client = AzureOpenAI(
-        api_version = AZURE_OPENAI_API_VERSION,
-        azure_endpoint = AZURE_OPENAI_ENDPOINT,
-        azure_ad_token_provider = token_provider
-    )
+    from openai import AsyncAzureOpenAI
+    import json
     ```
 
 ### Update embedding endpoint
@@ -82,14 +76,15 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 2. Locate the `generate_embeddings` method in the file and overwrite it with the following, which uses the `AzureOpenAIEmbeddings` class to handle interactions with Azure OpenAI:
 
     ```python
-    def generate_embeddings(text: str):
+    async def generate_embeddings(text: str):
+        """Generates embeddings for the provided text."""
         # Use LangChain's Azure OpenAI Embeddings class
         azure_openai_embeddings = AzureOpenAIEmbeddings(
             azure_deployment = EMBEDDING_DEPLOYMENT_NAME,
             azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
         )
-        return azure_openai_embeddings.embed_query(text)
+        return await azure_openai_embeddings.aembed_query(text)
     ```
 
     The `AzureOpenAIEmbeddings` class provides an interface for interacting with the Azure OpenAI Embeddings API, returning a simplified response object containing only the generated vector.
@@ -150,13 +145,13 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     ```python
     tools = [
-        StructuredTool.from_function(apply_discount),
-        StructuredTool.from_function(get_category_names),
-        StructuredTool.from_function(get_similar_products)
+        StructuredTool.from_function(coroutine=apply_discount),
+        StructuredTool.from_function(coroutine=get_category_names),
+        StructuredTool.from_function(coroutine=get_similar_products)
     ]
     ```
 
-    The `StructuredTool.from_function` method in LangChain creates a tool from a given function, using the input parameters and the function's docstring description. Alternatively, you can provide a description to the `from_function` call if a particular function does not contain a docstring.
+    The `StructuredTool.from_function` method in LangChain creates a tool from a given function, using the input parameters and the function's docstring description. To use it with async methods, you specify pass the function name to the `coroutine` input parameter.
 
     In Python, a docstring (short for documentation string) is a special type of string used to document a function, method, class, or module. It provides a convenient way of associating documentation with Python code and is typically enclosed within triple quotes (""" or '''). Docstrings are placed immediately after the definition of the function (or method, class, or module) they document.
 
@@ -165,8 +160,15 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 6. Delete all of the code between the `tools` array definition you completed above and the `return` statement at the end of the function. Using the Azure OpenAI client, you had to make two calls the the language model. The first to allow it to determine what function calls, if any, it needs to make to augment the prompt, and the second to ask for a RAG completion. In between, you had to use code to inspect the response from the first call to determine if function calls were required, and then write code to "handle" calling those functions. You then had to insert the output of those function calls into the messages being sent to the LLM, so it could have the enriched prompt to reason of when formulating a completion response. LangChain greatly simplifies the process of calling an LLM using a RAG pattern, as you will see below. The code you should remove is:
 
     ```python
+    # Create Azure OpenAI client
+    aoai_client = AsyncAzureOpenAI(
+        api_version = AZURE_OPENAI_API_VERSION,
+        azure_endpoint = AZURE_OPENAI_ENDPOINT,
+        azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+    )
+
     # First API call, providing the model to the defined functions
-    response = aoai_client.chat.completions.create(
+    response = await aoai_client.chat.completions.create(
         model = COMPLETION_DEPLOYMENT_NAME,
         messages = messages,
         tools = tools,
@@ -181,7 +183,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
     if response_message.tool_calls:
         for call in response_message.tool_calls:
             if call.function.name == "apply_discount":
-                func_response = apply_discount(**json.loads(call.function.arguments))
+                func_response = await apply_discount(**json.loads(call.function.arguments))
                 messages.append(
                     {
                         "role": "tool",
@@ -191,7 +193,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
                     }
                 )
             elif call.function.name == "get_category_names":
-                func_response = get_category_names()
+                func_response = await get_category_names()
                 messages.append(
                     {
                         "role": "tool",
@@ -201,7 +203,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
                     }
                 )
             elif call.function.name == "get_similar_products":
-                func_response = get_similar_products(**json.loads(call.function.arguments))
+                func_response = await get_similar_products(**json.loads(call.function.arguments))
                 messages.append(
                     {
                         "role": "tool",
@@ -214,7 +216,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
         print("No function calls were made by the model.")
 
     # Second API call, asking the model to generate a response
-    final_response = aoai_client.chat.completions.create(
+    final_response = await aoai_client.chat.completions.create(
         model = COMPLETION_DEPLOYMENT_NAME,
         messages = messages
     )
@@ -227,9 +229,9 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
     azure_openai = AzureChatOpenAI(
         azure_deployment=COMPLETION_DEPLOYMENT_NAME,
         azure_endpoint=AZURE_OPENAI_ENDPOINT,
-        azure_ad_token_provider=token_provider,
+        azure_ad_token_provider=get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default"),
         api_version=AZURE_OPENAI_API_VERSION
-    )
+    
     ```
 
 8. To allow your LangChain agent to interact with the functions you've defined, you will create an agent using the `create_openai_functions_agent` method, to which you will provide the `AzureChatOpenAI` objedt, `tools` array, and `ChatPromptTemplate` object:
@@ -251,7 +253,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 10. You will use the agent executor's `invoke` method to send the incoming user message to the LLM. You will also include the chat history. Insert the following code below the `agent_executor` definition:
 
     ```python
-    completion = agent_executor.invoke({"input": request.message, "chat_history": request.chat_history[-request.max_history:]})
+    completion = await agent_executor.ainvoke({"input": request.message, "chat_history": request.chat_history[-request.max_history:]})
     ```
 
     The `input` and `chat_history` tokens were defined in the prompt object created using the `ChatPromptTemplate`. With the `invoke` method, these will be injected into the prompt, allowing the LLM to use that information when creating a response.
@@ -266,7 +268,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     ```python
     @app.post('/chat')
-    def generate_chat_completion(request: CompletionRequest):
+    async def generate_chat_completion(request: CompletionRequest):
         """Generate a chat completion using the Azure OpenAI API."""
         # Define the system prompt that contains the assistant's persona.
         system_prompt = """
@@ -283,7 +285,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
         prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", system_prompt),
-                MessagesPlaceholder("chat history", optional=True),
+                MessagesPlaceholder("chat_history", optional=True),
                 ("user", "{input}"),
                 MessagesPlaceholder("agent_scratchpad")
             ]
@@ -300,14 +302,14 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
         azure_openai = AzureChatOpenAI(
             azure_deployment=COMPLETION_DEPLOYMENT_NAME,
             azure_endpoint=AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider=token_provider,
+            azure_ad_token_provider=get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default"),
             api_version=AZURE_OPENAI_API_VERSION
         )
     
         agent = create_openai_functions_agent(llm=azure_openai, tools=tools, prompt=prompt)
         agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
         
-        completion = agent_executor.invoke({"input": request.message, "chat_history": request.chat_history[-request.max_history:]})
+        completion = await agent_executor.ainvoke({"input": request.message, "chat_history": request.chat_history[-request.max_history:]})
             
         return completion["output"]
     ```
