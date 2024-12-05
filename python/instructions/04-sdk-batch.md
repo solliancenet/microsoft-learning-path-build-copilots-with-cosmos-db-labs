@@ -91,18 +91,37 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
+1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
+
+    ```bash
+    pip install asyncio
+    ```
+
+1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
+
+    ```bash
+    pip install aiohttp
+    ```
+
 ## Use the azure-cosmos library
 
 Using the credentials from the newly created account, you will connect with the SDK classes and create a new database and container instance. Then, you will use the Data Explorer to validate that the instances exist in the Azure portal.
 
-1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **python/04-sdk-batch** folder.
+1. In **Visual Studio Code**, in the **Explorer** pane, browse to the **python/03-sdk-crud** folder.
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statement to import the **CosmosClient** class:
+1. Add the following `import` statement to import the **PartitionKey** class:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import PartitionKey
+    ```
+
+1. Add the following `import` statements to import the asynchronous **CosmosClient** class and the **asyncio** library:
+
+    ```python
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
     ```
 
 1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
@@ -116,45 +135,59 @@ Using the credentials from the newly created account, you will connect with the 
 
     > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
 
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **key** variables:
 
     ```python
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
     ```
+
+    > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to create a database and container if they do not already exist:
 
     ```python
     # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    database = await client.create_database_if_not_exists(id="cosmicworks")
     
     # Create container
-    container = database.create_container_if_not_exists(
+    container = await database.create_container_if_not_exists(
         id="products",
         partition_key=PartitionKey(path="/categoryId"),
         offer_throughput=400
     )
     ```
 
+1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
+
+    ```python
+    if __name__ == "__main__":
+        asyncio.run(query_items_async())
+    ```
+
 1. Your **script.py** file should now look like this:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos import exceptions, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
+
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** the **script.py** file.
@@ -206,7 +239,7 @@ First, let's create a simple transactional batch that makes two fictional produc
 ```python
 try:
         # Execute the batch
-        batch_response = container.execute_item_batch(batch, partition_key=partition_key)
+        batch_response = await container.execute_item_batch(batch, partition_key=partition_key)
 
         # Print results for each operation in the batch
         for idx, result in enumerate(batch_response):
@@ -225,50 +258,54 @@ try:
 1. Once you are done, your code file should now include:
   
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey, exceptions
+    from azure.cosmos import exceptions, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
 
-    saddle = ("create", (
-        {"id": "0120", "name": "Worn Saddle", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
-    ))
-    handlebar = ("create", (
-        {"id": "012A", "name": "Rusty Handlebar", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
-    ))
+            saddle = ("create", (
+                {"id": "0120", "name": "Worn Saddle", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
+            ))
+            handlebar = ("create", (
+                {"id": "012A", "name": "Rusty Handlebar", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
+            ))
+        
+            partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
+        
+            batch = [saddle, handlebar]
+            
+            try:
+                # Execute the batch
+                batch_response = await container.execute_item_batch(batch, partition_key=partition_key)
+        
+                # Print results for each operation in the batch
+                for idx, result in enumerate(batch_response):
+                    status_code = result.get("statusCode")
+                    resource = result.get("resourceBody")
+                    print(f"Item {idx} - Status Code: {status_code}, Resource: {resource}")
+            except exceptions.CosmosBatchOperationError as e:
+                error_operation_index = e.error_index
+                error_operation_response = e.operation_responses[error_operation_index]
+                error_operation = batch[error_operation_index]
+                print("Error operation: {}, error operation response: {}".format(error_operation, error_operation_response))
+            except Exception as ex:
+                print(f"An error occurred: {ex}")
 
-    partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
-
-    batch = [saddle, handlebar]
-    
-    try:
-        # Execute the batch
-        batch_response = container.execute_item_batch(batch, partition_key=partition_key)
-
-        # Print results for each operation in the batch
-        for idx, result in enumerate(batch_response):
-            status_code = result.get("statusCode")
-            resource = result.get("resourceBody")
-            print(f"Item {idx} - Status Code: {status_code}, Resource: {resource}")
-    except exceptions.CosmosBatchOperationError as e:
-        error_operation_index = e.error_index
-        error_operation_response = e.operation_responses[error_operation_index]
-        error_operation = batch[error_operation_index]
-        print("Error operation: {}, error operation response: {}".format(error_operation, error_operation_response))
-    except Exception as ex:
-        print(f"An error occurred: {ex}")
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** and run the script again:
@@ -326,50 +363,54 @@ Now, let’s create a transactional batch that will error purposefully. This bat
 1. Once you are done, your code file should now include:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey, exceptions
+    from azure.cosmos import exceptions, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    # Create database
-    database = client.create_database_if_not_exists(id="cosmicworks")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Create database
+            database = await client.create_database_if_not_exists(id="cosmicworks")
     
-    # Create container
-    container = database.create_container_if_not_exists(
-        id="products",
-        partition_key=PartitionKey(path="/categoryId"),
-        offer_throughput=400
-    )
+            # Create container
+            container = await database.create_container_if_not_exists(
+                id="products",
+                partition_key=PartitionKey(path="/categoryId")
+            )
 
-    light = ("create", (
-        {"id": "012B", "name": "Flickering Strobe Light", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
-    ))
-    helmet = ("create", (
-        {"id": "012C", "name": "New Helmet", "categoryId": "0feee2e4-687a-4d69-b64e-be36afc33e74"},
-    ))
+            light = ("create", (
+                {"id": "012B", "name": "Flickering Strobe Light", "categoryId": "9603ca6c-9e28-4a02-9194-51cdb7fea816"},
+            ))
+            helmet = ("create", (
+                {"id": "012C", "name": "New Helmet", "categoryId": "0feee2e4-687a-4d69-b64e-be36afc33e74"},
+            ))
+        
+            partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
+        
+            batch = [light, helmet]
+            
+            try:
+                # Execute the batch
+                batch_response = await container.execute_item_batch(batch, partition_key=partition_key)
+        
+                # Print results for each operation in the batch
+                for idx, result in enumerate(batch_response):
+                    status_code = result.get("statusCode")
+                    resource = result.get("resourceBody")
+                    print(f"Item {idx} - Status Code: {status_code}, Resource: {resource}")
+            except exceptions.CosmosBatchOperationError as e:
+                error_operation_index = e.error_index
+                error_operation_response = e.operation_responses[error_operation_index]
+                error_operation = batch[error_operation_index]
+                print("Error operation: {}, error operation response: {}".format(error_operation, error_operation_response))
+            except Exception as ex:
+                print(f"An error occurred: {ex}")
 
-    partition_key = "9603ca6c-9e28-4a02-9194-51cdb7fea816"
-
-    batch = [light, helmet]
-    
-    try:
-        # Execute the batch
-        batch_response = container.execute_item_batch(batch, partition_key=partition_key)
-
-        # Print results for each operation in the batch
-        for idx, result in enumerate(batch_response):
-            status_code = result.get("statusCode")
-            resource = result.get("resourceBody")
-            print(f"Item {idx} - Status Code: {status_code}, Resource: {resource}")
-    except exceptions.CosmosBatchOperationError as e:
-        error_operation_index = e.error_index
-        error_operation_response = e.operation_responses[error_operation_index]
-        error_operation = batch[error_operation_index]
-        print("Error operation: {}, error operation response: {}".format(error_operation, error_operation_response))
-    except Exception as ex:
-        print(f"An error occurred: {ex}")
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** and run the script again:

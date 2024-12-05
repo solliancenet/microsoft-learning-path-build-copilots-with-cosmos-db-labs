@@ -115,6 +115,18 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
+1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
+
+    ```bash
+    pip install asyncio
+    ```
+
+1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
+
+    ```bash
+    pip install aiohttp
+    ```
+
 ## Paginate through small result sets of a SQL query using the SDK
 
 When processing query results, you must make sure your code progresses through all pages of results and checks to see if any more pages are remaining before making subsequent requests.
@@ -123,10 +135,11 @@ When processing query results, you must make sure your code progresses through a
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statement to import the **CosmosClient** class:
+1. Add the following `import` statements to import the asynchronous **CosmosClient** class and the **asyncio** library:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
     ```
 
 1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
@@ -140,11 +153,14 @@ When processing query results, you must make sure your code progresses through a
 
     > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
 
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **key** variables:
 
     ```python
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
     ```
+
+    > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to connect to the database and container you created earlier:
 
@@ -153,59 +169,69 @@ When processing query results, you must make sure your code progresses through a
     container = database.get_container_client("products")
     ```
 
-1. Create a new variable named **sql** of type *string* with a value of **SELECT p.id, p.name, p.price FROM products p**:
+1. Create a new variable named **sql** of type *string* with a value of **SELECT * FROM products WHERE products.price > 500**:
 
     ```python
-    sql = "SELECT p.id, p.name, p.price FROM products p"
+    sql = "SELECT * FROM products WHERE products.price > 500"
     ```
 
-1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor. The `enable_cross_partition_query`, when set to `True`, allows sending of more than one request to execute the query in the Azure Cosmos DB service. More than one request is necessary if the query is not scoped to single partition key value. Set the `max_item_count` to `50` to limit the number of items returned in each page.
+1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor. Set the `max_item_count` to `50` to limit the number of items returned in each page.
 
     ```python
     iterator = container.query_items(
         query=sql,
-        enable_cross_partition_query=True,
         max_item_count=50  # Set maximum items per page
     )
     ```
 
-1. Create a **for** loop that invokes the [`by_page`](https://learn.microsoft.com/python/api/azure-core/azure.core.paging.itempaged?view=azure-python#azure-core-paging-itempaged-by-page) method on the iterator object. This method returns a page of results each time it is called.
+1. Create an async **for** loop that asynchronously invokes the [`by_page`](https://learn.microsoft.com/python/api/azure-core/azure.core.paging.itempaged?view=azure-python#azure-core-paging-itempaged-by-page) method on the iterator object. This method returns a page of results each time it is called.
 
     ```python
-    for page in iterator.by_page():
+    async for page in iterator.by_page():
     ```
 
-1. Within the **for** loop, iterate over the paginated results and print the `id`, `name`, and `price` of each item.
+1. Within the async **for** loop, asynchronously iterate over the paginated results and print the `id`, `name`, and `price` of each item.
 
     ```python
-    for product in page:
+    async for product in page:
         print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
+    ```
+
+1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
+
+    ```python
+    if __name__ == "__main__":
+        asyncio.run(query_items_async())
     ```
 
 1. Your **script.py** file should now look like this:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
-
-    database = client.get_database_client("cosmicworks-full")
-    container = database.get_container_client("products")
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+            # Get database and container clients
+            database = client.get_database_client("cosmicworks-full")
+            container = database.get_container_client("products")
     
-    sql = "SELECT * FROM products WHERE products.price > 500"
+            sql = "SELECT * FROM products WHERE products.price > 500"
+        
+            iterator = container.query_items(
+                query=sql,
+                max_item_count=50  # Set maximum items per page
+            )
+        
+            async for page in iterator.by_page():
+                async for product in page:
+                    print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
 
-    iterator = container.query_items(
-        query=sql,
-        enable_cross_partition_query=True,
-        max_item_count=50  # Set maximum items per page
-    )
-
-    for page in iterator.by_page():
-        for product in page:
-            print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** the **script.py** file.

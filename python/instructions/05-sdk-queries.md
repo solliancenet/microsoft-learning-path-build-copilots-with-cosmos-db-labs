@@ -117,6 +117,18 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
+1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
+
+    ```bash
+    pip install asyncio
+    ```
+
+1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
+
+    ```bash
+    pip install aiohttp
+    ```
+
 ## Iterate over the results of a SQL query using the SDK
 
 Using the credentials from the newly created account, you will connect with the SDK classes and connect to the database and container you provisioned in an earlier step, and iterate over the results of a SQL query using the SDK.
@@ -127,10 +139,11 @@ You will now use an iterator to create a simple-to-understand loop over paginate
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statement to import the **CosmosClient** class:
+1. Add the following `import` statements to import the asynchronous **CosmosClient** class and the **asyncio** library:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
     ```
 
 1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
@@ -144,11 +157,14 @@ You will now use an iterator to create a simple-to-understand loop over paginate
 
     > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
 
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **key** variables:
 
     ```python
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
     ```
+
+    > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to connect to the database and container you created earlier:
 
@@ -163,44 +179,56 @@ You will now use an iterator to create a simple-to-understand loop over paginate
     sql = "SELECT * FROM products p"
     ```
 
-1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor. The `enable_cross_partition_query`, when set to `True`, allows sending of more than one request to execute the query in the Azure Cosmos DB service. More than one request is necessary if the query is not scoped to single partition key value.
+1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor.
 
     ```python
     result_iterator = container.query_items(
-        query=sql,
-        enable_cross_partition_query=True
+        query=sql
     )
     ```
 
-1. Iterate over the paginated results and print the `id`, `name`, and `price` of each item.
+1. The **query_items** method returned an asynchronous iterator that we store in a variable named `result_iterator`. This means that each object from the iterator is an awaitable object and does not yet contain the query result. Add the code below to create an async **for** loop to await each query result as you iterate over the asynchronous iterator and print the `id`, `name`, and `price` of each item.
 
     ```python
-    for item in result_iterator:
+    # Perform the query asynchronously
+    async for item in result_iterator:
         print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+    ```
+
+1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
+
+    ```python
+    if __name__ == "__main__":
+        asyncio.run(query_items_async())
     ```
 
 1. Your **script.py** file should now look like this:
 
     ```python
-    from azure.cosmos import CosmosClient, PartitionKey
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
 
     endpoint = "<cosmos-endpoint>"
     key = "<cosmos-key>"
 
-    client = CosmosClient(endpoint, key)
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
 
-    database = client.get_database_client("cosmicworks-full")
-    container = database.get_container_client("products")
+            database = client.get_database_client("cosmicworks-full")
+            container = database.get_container_client("products")
     
-    sql = "SELECT * FROM products p"
-    
-    result_iterator = container.query_items(
-        query=sql,
-        enable_cross_partition_query=True
-    )
-    
-    for item in result_iterator:
-        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+            sql = "SELECT * FROM products p"
+            
+            result_iterator = container.query_items(
+                query=sql
+            )
+            
+            # Perform the query asynchronously
+            async for item in result_iterator:
+                print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+
+    if __name__ == "__main__":
+        asyncio.run(main())
     ```
 
 1. **Save** the **script.py** file.
