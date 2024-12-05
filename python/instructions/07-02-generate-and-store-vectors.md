@@ -173,15 +173,11 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
     > &#128221; The `EMBEDDING_DEPLOYMENT_NAME` is the **Name** value you noted after deploying the `text-embedding-3-small` model in Azure AI Studio. If you need to refer back to it, launch Azure AI Studio, navigate to the **Deployments** page and locate the deployment whose **Model name** is `text-embedding-3-small`. Then, copy the **Name** field value of that item. If you deployed the `text-embedding-ada-002` model, use the name for that deployment.
 
-5. Use the Azure Identity SDK for Python's classes to create an asynchronous credential and a token provider for accessing Azure OpenAI and Azure Cosmos DB by inserting the following code below the variable declarations:
+5. Use the Azure Identity SDK for Python's `DefaultAzureCredential` class to create an asynchronous credential for accessing Azure OpenAI and Azure Cosmos DB using Microsoft Entra ID RBAC authentication by inserting the following code below the variable declarations:
 
     ```python
     # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential,
-        "https://cognitiveservices.azure.com/.default"
-    )
     ```
 
 6. To handle the creation of embeddings, insert the following, which adds a function to generate embeddings using an Azure OpenAI client:
@@ -193,7 +189,7 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
         async with AsyncAzureOpenAI(
             api_version = AZURE_OPENAI_API_VERSION,
             azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
         ) as client:
             response = await client.embeddings.create(
                 input = text,
@@ -201,6 +197,8 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
             )
             return response.data[0].embedding
     ```
+
+    Creation of the Azure OpenAI client does not require the `api_key` value because it is retrieving a bearer token using the Azure Identity SDK's `get_bearer_token_provider` class.
 
 7. The `main.py` file should now look similar to the following:
 
@@ -215,10 +213,6 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
     
     # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential,
-        "https://cognitiveservices.azure.com/.default"
-    )
     
     async def generate_embeddings(text: str):
         """Generates embeddings for the provided text."""
@@ -226,7 +220,7 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
         async with AsyncAzureOpenAI(
             api_version = AZURE_OPENAI_API_VERSION,
             azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
         ) as client:
             response = await client.embeddings.create(
                 input = text,
@@ -271,10 +265,6 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
     
     # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential,
-        "https://cognitiveservices.azure.com/.default"
-    )
     
     async def generate_embeddings(text: str):
         """Generates embeddings for the provided text."""
@@ -282,7 +272,7 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
         async with AsyncAzureOpenAI(
             api_version = AZURE_OPENAI_API_VERSION,
             azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
         ) as client:
             response = await client.embeddings.create(
                 input = text,
@@ -397,10 +387,6 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
     
     # Enable Microsoft Entra ID RBAC authentication
     credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential,
-        "https://cognitiveservices.azure.com/.default"
-    )
     
     async def generate_embeddings(text: str):
         """Generates embeddings for the provided text."""
@@ -408,7 +394,7 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
         async with AsyncAzureOpenAI(
             api_version = AZURE_OPENAI_API_VERSION,
             azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = token_provider
+            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
         ) as client:
             response = await client.embeddings.create(
                 input = text,
