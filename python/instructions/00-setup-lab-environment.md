@@ -5,7 +5,7 @@ lab:
     module: 'Setup'
 layout: default
 nav_order: 2
-parent: 'Python SDK labs'
+parent: 'Python SDK lab setup'
 ---
 
 # Setup local lab environment

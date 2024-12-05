@@ -5,7 +5,7 @@ lab:
     module: 'Setup'
 layout: default
 nav_order: 3
-parent: 'Python SDK labs'
+parent: 'Python SDK lab setup'
 ---
 
 # Enable Azure resource providers
