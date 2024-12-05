@@ -169,6 +169,8 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
     EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
     ```
 
+    If your embedding deployment name differs, update the value assigned to the variable accordingly.
+
     > &#128161; The API version of `2024-10-21` was the latest GA release version as of the time of this writing. You can use that or a new version, if one is available. The API specs documentation contains a [table with the latest API versions](https://learn.microsoft.com/azure/ai-services/openai/reference#api-specs).
 
     > &#128221; The `EMBEDDING_DEPLOYMENT_NAME` is the **Name** value you noted after deploying the `text-embedding-3-small` model in Azure AI Studio. If you need to refer back to it, launch Azure AI Studio, navigate to the **Deployments** page and locate the deployment whose **Model name** is `text-embedding-3-small`. Then, copy the **Name** field value of that item. If you deployed the `text-embedding-ada-002` model, use the name for that deployment.
