@@ -241,6 +241,90 @@ You will now use an iterator to create a simple-to-understand loop over paginate
 
 1. The script will now output every product in the container.
 
+## Perform a query within a logical partition
+
+In the previous section, you queried all items in the container. By default, the async **CosmosClient** performs cross-partition queries. Because of this, the query you executed (`"SELECT * FROM products p"`) caused the query engine to scan all partitions in the container. As a best practice, you should always query within a logical partition to avoid cross-partition queries. Doing so ultimately saves you money and improves performance.
+
+In this section, you will perform a query within a logical partition by including the partition key in the query.
+
+1. Return to the editor tab for the **script.py** code file.
+
+1. Delete the following lines of code:
+
+    ```python
+    result_iterator = container.query_items(
+        query=sql
+    )
+    
+    # Perform the query asynchronously
+    async for item in result_iterator:
+        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+    ```
+
+1. Modify the script to create a **partition_key** variable to store the Category ID value for jerseys. Add the **partition_key** as a parameter to the **query_items** method. This ensures that the query is executed within the logical partition for the jerseys category.
+
+    ```python
+    partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
+
+    result_iterator = container.query_items(
+        query=sql,
+        partition_key=partition_key
+    )
+    ```
+
+1. In the previous section, you performed an async for loop directly on the asynchronous iterator (`async for item in result_iterator:`). This time, you'll  asynchronously create a complete list of the actual query results. This code performs the same action as the for-loop example you previously used. Add the following lines of code to create a list of results and print the results:
+
+    ```python
+    item_list = [item async for item in result_iterator]
+
+    for item in item_list:
+        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+    ```
+
+1. Your **script.py** file should now look like this:
+
+    ```python
+    from azure.cosmos.aio import CosmosClient
+    import asyncio
+
+    endpoint = "<cosmos-endpoint>"
+    key = "<cosmos-key>"
+
+    async def main():
+        async with CosmosClient(endpoint, credential=key) as client:
+
+            database = client.get_database_client("cosmicworks-full")
+            container = database.get_container_client("products")
+    
+            sql = "SELECT * FROM products p"
+            
+            partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
+
+            result_iterator = container.query_items(
+                query=sql,
+                partition_key=partition_key
+            )
+    
+            # Perform the query asynchronously
+            item_list = [item async for item in result_iterator]
+    
+            for item in item_list:
+                print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+1. **Save** the **script.py** file.
+
+1. Run the script to create the database and container:
+
+    ```bash
+    python script.py
+    ```
+
+1. The script will now output every product within the jersey category, effectively performing an in-partition query.
+
 1. Close the integrated terminal.
 
 1. Close **Visual Studio Code**.
