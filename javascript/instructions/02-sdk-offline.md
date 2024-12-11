@@ -16,23 +16,13 @@ In this lab, you'll connect to the Azure Cosmos DB Emulator from the Azure SDK f
 
 ## Prepare your development environment
 
-If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** to the environment where you're working on this lab, follow these steps to do so. Otherwise, open the previously cloned folder in **Visual Studio Code**.
-
-> &#128161; You may optionally install the [new Linux-based Azure Cosmos DB Emulator (in preview)](https://learn.microsoft.com/azure/cosmos-db/emulator-linux), which is available as a Docker container. It supports running on a wide variety of processors and operating systems.
-
-1. Start **Visual Studio Code**.
-
-    > &#128221; If you are not already familiar with the Visual Studio Code interface, review the [Get Started guide for Visual Studio Code][code.visualstudio.com/docs/getstarted]
-
-1. Open the command palette and run **Git: Clone** to clone the ``https://github.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs`` GitHub repository in a local folder of your choice.
-
-    > &#128161; You can use the **CTRL+SHIFT+P** keyboard shortcut to open the command palette.
-
-1. Once the repository has been cloned, open the local folder you selected in **Visual Studio Code**.
+If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** and set up your local environment, view the [Setup local lab environment]({% link javascript/instructions/00-setup-lab-environment.md %}) instructions to do so.
 
 ## Start the Azure Cosmos DB Emulator
 
 If you are using a hosted lab environment, it should already have the emulator installed. If not, refer to the [installation instructions](https://docs.microsoft.com/azure/cosmos-db/local-emulator) to install the Azure Cosmos DB Emulator. Once the emulator has started, you can retrieve the connection string and use it to connect to the emulator using the Azure SDK for JavaScript.
+
+> &#128161; You may optionally install the [new Linux-based Azure Cosmos DB Emulator (in preview)](https://learn.microsoft.com/azure/cosmos-db/emulator-linux), which is available as a Docker container. It supports running on a wide variety of processors and operating systems.
 
 1. Start the **Azure Cosmos DB Emulator**.
 

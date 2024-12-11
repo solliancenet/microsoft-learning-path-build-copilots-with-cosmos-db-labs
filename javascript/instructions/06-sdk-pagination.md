@@ -16,55 +16,11 @@ In this lab, you'll create a feed iterator that can be used in a loop to iterate
 
 ## Prepare your development environment
 
-If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** to the environment where you're working on this lab, follow these steps to do so. Otherwise, open the previously cloned folder in **Visual Studio Code**.
-
-1. Start **Visual Studio Code**.
-
-    > &#128221; If you are not already familiar with the Visual Studio Code interface, review the [Get Started guide for Visual Studio Code][code.visualstudio.com/docs/getstarted]
-
-1. Open the command palette and run **Git: Clone** to clone the ``https://github.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs`` GitHub repository in a local folder of your choice.
-
-    > &#128161; You can use the **CTRL+SHIFT+P** keyboard shortcut to open the command palette.
-
-1. Once the repository has been cloned, open the local folder you selected in **Visual Studio Code**.
+If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** and set up your local environment, view the [Setup local lab environment]({% link javascript/instructions/00-setup-lab-environment.md %}) instructions to do so.
 
 ## Create an Azure Cosmos DB for NoSQL account
 
-If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#create-azure-cosmos-db-database-and-container-with-sample-data). Otherwise, follow the steps below to create a new Azure Cosmos DB for NoSQL account.
-
-<details markdown=1>
-<summary markdown="span"><strong>Click to expand/collapse steps to create an Azure Cosmos DB for NoSQL account</strong></summary>
-
-Azure Cosmos DB is a cloud-based NoSQL database service that supports multiple APIs. When provisioning an Azure Cosmos DB account for the first time, you will select which of the APIs you want the account to support. Once the Azure Cosmos DB for NoSQL account is done provisioning, you can retrieve the endpoint and key and use them to connect to the Azure Cosmos DB for NoSQL account using the Azure SDK for Python or any other SDK of your choice.
-
-1. In a new web browser window or tab, navigate to the Azure portal (``portal.azure.com``).
-
-1. Sign into the portal using the Microsoft credentials associated with your subscription.
-
-1. Select **+ Create a resource**, search for *Cosmos DB*, and then create a new **Azure Cosmos DB for NoSQL** account resource with the following settings, leaving all remaining settings to their default values:
-
-    | **Setting** | **Value** |
-    | ---: | :--- |
-    | **Subscription** | *Your existing Azure subscription* |
-    | **Resource group** | *Select an existing or create a new resource group* |
-    | **Account Name** | *Enter a globally unique name* |
-    | **Location** | *Choose any available region* |
-    | **Capacity mode** | *Serverless* |
-    | **Apply Free Tier Discount** | *Do Not Apply* |
-
-    > &#128221; Your lab environments may have restrictions preventing you from creating a new resource group. If that is the case, use the existing pre-created resource group.
-
-1. Wait for the deployment task to complete before continuing with this task.
-
-1. Go to the newly created **Azure Cosmos DB** account resource and navigate to the **Keys** pane.
-
-1. This pane contains the connection details and credentials necessary to connect to the account from the SDK. Specifically:
-
-    1. Notice the **URI** field. You will use this **endpoint** value later in this exercise.
-
-    1. Notice the **PRIMARY KEY** field. You will use this **key** value later in this exercise.
-
-</details>
+If you already created an Azure Cosmos DB for NoSQL account for the **Build copilots with Azure Cosmos DB** labs on this site, you can use it for this lab and skip ahead to the [next section](#create-azure-cosmos-db-database-and-container-with-sample-data). Otherwise, view the [Setup Azure Cosmos DB]({% link common/instructions/00-setup-cosmos-db.md %}) instructions to create an Azure Cosmos DB for NoSQL account that you will use throughout the lab modules and grant your user identity access to manage data in the account by assigning it to the **Cosmos DB Built-in Data Contributor** role.
 
 ## Create Azure Cosmos DB database and container with sample data
 
