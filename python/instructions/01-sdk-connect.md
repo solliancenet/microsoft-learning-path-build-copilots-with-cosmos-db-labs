@@ -16,7 +16,7 @@ In this lab, you'll connect to an Azure Cosmos DB for NoSQL account using the Az
 
 ## Prepare your development environment
 
-If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** and set up your local environment, view the [Setup local lab environment]({% link 00-setup-lab-environment.md %}) instructions to do so.
+If you have not already cloned the lab code repository for **Build copilots with Azure Cosmos DB** and set up your local environment, view the [Setup local lab environment]({% link python/instructions/00-setup-lab-environment.md %}) instructions to do so.
 
 ## Create an Azure Cosmos DB for NoSQL account
 
