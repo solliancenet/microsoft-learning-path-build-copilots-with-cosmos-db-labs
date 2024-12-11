@@ -10,6 +10,14 @@ This repository contains the hands-on lab exercises for the [self-paced modules 
 
 > &#128221; To complete these exercises, you’ll require a Microsoft Azure subscription. You can sign up for a free trial at [https://azure.microsoft.com][azure].
 
+## Common setup instructions
+
+{% assign labs = site.pages | where_exp:"page", "page.url contains 'common/instructions'" %}
+| Module | Lab |
+| --- | --- |
+{% for activity in labs  %}| {{ activity.lab.module }} | [{{ activity.lab.title }}]({{ site.baseurl }}{{ activity.url }}) |
+{% endfor %}
+
 ## Python SDK labs
 
 {% assign labs = site.pages | where_exp:"page", "page.url contains 'python/instructions'" %}
