@@ -5,7 +5,7 @@ lab:
     module: 'Setup'
 layout: default
 nav_order: 1
-parent: 'Python SDK labs'
+parent: 'Common setup instructions'
 ---
 
 # Create Azure resource group for lab
