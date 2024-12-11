@@ -3,7 +3,7 @@ title: 'Common setup instructions'
 has_children: true
 has_toc: false
 layout: default
-nav_order: 1
+nav_order: 2
 ---
 
 # Common setup instructions
