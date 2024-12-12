@@ -102,6 +102,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
     const { DefaultAzureCredential  } = require("@azure/identity");
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
     const endpoint = "<cosmos-endpoint>";
     const credential = new DefaultAzureCredential();
