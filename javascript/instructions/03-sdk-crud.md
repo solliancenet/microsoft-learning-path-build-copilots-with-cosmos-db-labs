@@ -44,6 +44,12 @@ The **@azure/cosmos** library is available on **npm** for easy installation into
     npm install @azure/cosmos
     ```
 
+1. Install the [@azure/identity][npmjs.com/package/@azure/identity] library, which allows us to use Azure authentication to connect to the Azure Cosmos DB workspace, using the following command:
+
+    ```bash
+    npm install @azure/identity
+    ```
+
 ## Use the @azure/cosmos library
 
 Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been imported, you can immediately use its classes to connect to an Azure Cosmos DB for NoSQL account. The **CosmosClient** class is the core class used to make the initial connection to an Azure Cosmos DB for NoSQL account.
@@ -52,28 +58,27 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
 1. Open the empty JavaScript file named **script.js**.
 
-1. Add the following `require` statement to import the **@azure/cosmos** library:
+1. Add the following `require` statements to import the **@azure/cosmos** and **@azure/identity** libraries:
 
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
+    const { DefaultAzureCredential  } = require("@azure/identity");
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
     ```
 
-1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
+1. Add variables named **endpoint** and **credential** and set the **endpoint** value to the **endpoint** of the Azure Cosmos DB account you created earlier. The **credential** variable should be set to a new instance of the **DefaultAzureCredential** class:
 
     ```javascript
     const endpoint = "<cosmos-endpoint>";
-    const key = "<cosmos-key>";
+    const credential = new DefaultAzureCredential();
     ```
 
     > &#128221; For example, if your endpoint is: **https://dp420.documents.azure.com:443/**, the statement would be: **const endpoint = "https://dp420.documents.azure.com:443/";**.
 
-    > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **const key = "fDR2ci9QgkdkvERTQ==";**.
-
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **credential** variables:
 
     ```javascript
-    const client = new CosmosClient({ endpoint, key });
+    const client = new CosmosClient({ endpoint, aadCredentials: credential });
     ```
 
 1. Add the following code to create a database and container if they do not already exist:
@@ -98,12 +103,13 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
+    const { DefaultAzureCredential  } = require("@azure/identity");
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
     const endpoint = "<cosmos-endpoint>";
-    const key = "<cosmos-key>";
+    const credential = new DefaultAzureCredential();
 
-    const client = new CosmosClient({ endpoint, key });
+    const client = new CosmosClient({ endpoint, aadCredentials: credential });
 
     async function main() {
         // Create database
@@ -121,6 +127,12 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
     ```
 
 1. **Save** the **script.js** file.
+
+1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
+
+    ```azurecli
+    az login
+    ```
 
 1. Run the script to create the database and container:
 
@@ -171,12 +183,13 @@ You will now use the set of methods in the **Container** class to perform common
   
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
+    const { DefaultAzureCredential  } = require("@azure/identity");
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
     const endpoint = "<cosmos-endpoint>";
-    const key = "<cosmos-key>";
+    const credential = new DefaultAzureCredential();
 
-    const client = new CosmosClient({ endpoint, key });
+    const client = new CosmosClient({ endpoint, aadCredentials: credential });
 
     async function main() {
         // Create database
@@ -262,12 +275,13 @@ You will now use the set of methods in the **Container** class to perform common
 
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
+    const { DefaultAzureCredential  } = require("@azure/identity");
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-    
+
     const endpoint = "<cosmos-endpoint>";
-    const key = "<cosmos-key>";
-    
-    const client = new CosmosClient({ endpoint, key });
+    const credential = new DefaultAzureCredential();
+
+    const client = new CosmosClient({ endpoint, aadCredentials: credential });
 
     async function main() {
         // Create database
@@ -350,12 +364,13 @@ While learning the SDK, it's not uncommon to use an online Azure Cosmos DB accou
 
     ```javascript
     const { CosmosClient } = require("@azure/cosmos");
+    const { DefaultAzureCredential  } = require("@azure/identity");
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-    
+
     const endpoint = "<cosmos-endpoint>";
-    const key = "<cosmos-key>";
-    
-    const client = new CosmosClient({ endpoint, key });
+    const credential = new DefaultAzureCredential();
+
+    const client = new CosmosClient({ endpoint, aadCredentials: credential });
 
     async function main() {
         // Create database
@@ -449,3 +464,4 @@ While learning the SDK, it's not uncommon to use an online Azure Cosmos DB accou
 
 [code.visualstudio.com/docs/getstarted]: https://code.visualstudio.com/docs/getstarted/tips-and-tricks
 [npmjs.com/package/@azure/cosmos]: https://www.npmjs.com/package/@azure/cosmos
+[npmjs.com/package/@azure/identity]: https://www.npmjs.com/package/@azure/identity
