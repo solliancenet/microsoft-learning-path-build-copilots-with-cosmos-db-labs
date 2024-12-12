@@ -45,6 +45,12 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install azure-cosmos
     ```
 
+1. Install the [azure-identity][pypi.org/project/azure-identity] library, which allows us to use Azure authentication to connect to the Azure Cosmos DB workspace, using the following command:
+
+    ```bash
+    pip install azure-identity
+    ```
+
 1. Close the integrated terminal.
 
 ## Use the azure-cosmos library
@@ -55,27 +61,26 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statement to import the **CosmosClient** class:
+1. Add the following `import` statement to import the **CosmosClient** and the **DefaultAzureCredential** classes:
 
     ```python
     from azure.cosmos import CosmosClient
+    from azure.identity import DefaultAzureCredential
     ```
 
-1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
+1. Add variables named **endpoint** and **credential** and set the **endpoint** value to the **endpoint** of the Azure Cosmos DB account you created earlier. The **credential** variable should be set to a new instance of the **DefaultAzureCredential** class:
 
     ```python
     endpoint = "<cosmos-endpoint>"
-    key = "<cosmos-key>"
+    credential = DefaultAzureCredential()
     ```
 
     > &#128221; For example, if your endpoint is: **https://dp420.documents.azure.com:443/**, the statement would be: **endpoint = "https://dp420.documents.azure.com:443/"**.
 
-    > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
-
-1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **key** variables:
+1. Add a new variable named **client** and initialize it as a new instance of the **CosmosClient** class using the **endpoint** and **credential** variables:
 
     ```python
-    client = CosmosClient(endpoint, key)
+    client = CosmosClient(endpoint, credential=credential)
     ```
 
 1. Add a function named **main** to read and print account properties:
@@ -94,9 +99,10 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
 
     ```python
     from azure.cosmos import CosmosClient
+    from azure.identity import DefaultAzureCredential
 
     endpoint = "<cosmos-endpoint>"
-    key = "<cosmos-key>"
+    credential = DefaultAzureCredential()
 
     client = CosmosClient(endpoint, key)
 
@@ -117,6 +123,12 @@ Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is 
 
 1. In **Visual Studio Code**, open the context menu for the **python/01-sdk-connect** folder and then select **Open in Integrated Terminal** to open a new terminal instance.
 
+1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
+
+    ```azurecli
+    az login
+    ```
+
 1. Run the script using the `python` command:
 
     ```bash
@@ -135,3 +147,4 @@ Now that the Python code to connect to the Azure Cosmos DB for NoSQL account is 
 1. Close **Visual Studio Code**.
 
 [pypi.org/project/azure-cosmos]: https://pypi.org/project/azure-cosmos
+[pypi.org/project/azure-identity]: https://pypi.org/project/azure-identity

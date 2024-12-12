@@ -83,6 +83,12 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
     pip install aiohttp
     ```
 
+1. Install the [azure-identity][pypi.org/project/azure-identity] library, which allows us to use Azure authentication to connect to the Azure Cosmos DB workspace, using the following command:
+
+    ```bash
+    pip install azure-identity
+    ```
+
 ## Paginate through small result sets of a SQL query using the SDK
 
 When processing query results, you must make sure your code progresses through all pages of results and checks to see if any more pages are remaining before making subsequent requests.
@@ -91,29 +97,28 @@ When processing query results, you must make sure your code progresses through a
 
 1. Open the blank Python file named **script.py**.
 
-1. Add the following `import` statements to import the asynchronous **CosmosClient** class and the **asyncio** library:
+1. Add the following `import` statements to import the asynchronous **CosmosClient** class, **DefaultAzureCredential** class, and the **asyncio** library:
 
     ```python
     from azure.cosmos.aio import CosmosClient
+    from azure.identity.aio import DefaultAzureCredential
     import asyncio
     ```
 
-1. Add variables named **endpoint** and **key** and set their values to the **endpoint** and **key** of the Azure Cosmos DB account you created earlier.
+1. Add variables named **endpoint** and **credential** and set the **endpoint** value to the **endpoint** of the Azure Cosmos DB account you created earlier. The **credential** variable should be set to a new instance of the **DefaultAzureCredential** class:
 
     ```python
     endpoint = "<cosmos-endpoint>"
-    key = "<cosmos-key>"
+    credential = DefaultAzureCredential()
     ```
 
     > &#128221; For example, if your endpoint is: **https://dp420.documents.azure.com:443/**, the statement would be: **endpoint = "https://dp420.documents.azure.com:443/"**.
 
-    > &#128221; If your key is: **fDR2ci9QgkdkvERTQ==**, the statement would be: **key = "fDR2ci9QgkdkvERTQ=="**.
-
-1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **key** variables:
+1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **credential** variables:
 
     ```python
     async def main():
-        async with CosmosClient(endpoint, credential=key) as client:
+        async with CosmosClient(endpoint, credential=credential) as client:
     ```
 
     > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
@@ -164,13 +169,14 @@ When processing query results, you must make sure your code progresses through a
 
     ```python
     from azure.cosmos.aio import CosmosClient
+    from azure.identity.aio import DefaultAzureCredential
     import asyncio
 
     endpoint = "<cosmos-endpoint>"
-    key = "<cosmos-key>"
+    credential = DefaultAzureCredential()
 
     async def main():
-        async with CosmosClient(endpoint, credential=key) as client:
+        async with CosmosClient(endpoint, credential=credential) as client:
             # Get database and container clients
             database = client.get_database_client("cosmicworks-full")
             container = database.get_container_client("products")
@@ -192,6 +198,12 @@ When processing query results, you must make sure your code progresses through a
 
 1. **Save** the **script.py** file.
 
+1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
+
+    ```azurecli
+    az login
+    ```
+
 1. Run the script to create the database and container:
 
     ```bash
@@ -208,3 +220,4 @@ When processing query results, you must make sure your code progresses through a
 
 [code.visualstudio.com/docs/getstarted]: https://code.visualstudio.com/docs/getstarted/tips-and-tricks
 [pypi.org/project/azure-cosmos]: https://pypi.org/project/azure-cosmos
+[pypi.org/project/azure-identity]: https://pypi.org/project/azure-identity
