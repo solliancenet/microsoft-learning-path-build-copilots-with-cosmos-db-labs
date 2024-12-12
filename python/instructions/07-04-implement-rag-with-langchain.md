@@ -320,7 +320,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
 2. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
 
-    ```azurecli
+    ```bash
     az login
     ```
 

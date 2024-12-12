@@ -298,7 +298,7 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
 
 4. Before running the API, which will send requests to Azure OpenAI, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```azurecli
+    ```bash
     az login
     ```
 

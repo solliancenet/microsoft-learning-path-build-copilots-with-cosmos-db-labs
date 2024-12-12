@@ -200,7 +200,7 @@ When processing query results, you must make sure your code progresses through a
 
 1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```azurecli
+    ```bash
     az login
     ```
 

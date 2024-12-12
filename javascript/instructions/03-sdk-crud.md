@@ -130,7 +130,7 @@ Once the Azure Cosmos DB library from the Azure SDK for JavaScript has been impo
 
 1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```azurecli
+    ```bash
     az login
     ```
 

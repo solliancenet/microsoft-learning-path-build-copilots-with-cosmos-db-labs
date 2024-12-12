@@ -196,7 +196,7 @@ You will now use an iterator to create a simple-to-understand loop over paginate
 
 1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```azurecli
+    ```bash
     az login
     ```
 
