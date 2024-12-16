@@ -121,7 +121,7 @@ Using the credentials from the newly created account, you will connect with the 
 
     ```python
     if __name__ == "__main__":
-        asyncio.run(query_items_async())
+        asyncio.run(main())
     ```
 
 1. Your **script.py** file should now look like this:
