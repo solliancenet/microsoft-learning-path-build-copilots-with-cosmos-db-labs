@@ -62,34 +62,34 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
 
 1. Create and activate a virtual environment to manage dependencies:
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
-    ```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
+   ```
 
 1. Install the [azure-cosmos][pypi.org/project/azure-cosmos] package using the following command:
 
-    ```bash
-    pip install azure-cosmos
-    ```
+   ```bash
+   pip install azure-cosmos
+   ```
 
 1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
 
-    ```bash
-    pip install asyncio
-    ```
+   ```bash
+   pip install asyncio
+   ```
 
 1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
 
-    ```bash
-    pip install aiohttp
-    ```
+   ```bash
+   pip install aiohttp
+   ```
 
 1. Install the [azure-identity][pypi.org/project/azure-identity] library, which allows us to use Azure authentication to connect to the Azure Cosmos DB workspace, using the following command:
 
-    ```bash
-    pip install azure-identity
-    ```
+   ```bash
+   pip install azure-identity
+   ```
 
 ## Iterate over the results of a SQL query using the SDK
 
@@ -103,109 +103,109 @@ You will now use an iterator to create a simple-to-understand loop over paginate
 
 1. Add the following `import` statements to import the asynchronous **CosmosClient** class, **DefaultAzureCredential** class, and the **asyncio** library:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    from azure.identity.aio import DefaultAzureCredential
-    import asyncio
-    ```
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   from azure.identity.aio import DefaultAzureCredential
+   import asyncio
+   ```
 
 1. Add variables named **endpoint** and **credential** and set the **endpoint** value to the **endpoint** of the Azure Cosmos DB account you created earlier. The **credential** variable should be set to a new instance of the **DefaultAzureCredential** class:
 
-    ```python
-    endpoint = "<cosmos-endpoint>"
-    credential = DefaultAzureCredential()
-    ```
+   ```python
+   endpoint = "<cosmos-endpoint>"
+   credential = DefaultAzureCredential()
+   ```
 
     > &#128221; For example, if your endpoint is: **https://dp420.documents.azure.com:443/**, the statement would be: **endpoint = "https://dp420.documents.azure.com:443/"**.
 
 1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **credential** variables:
 
-    ```python
-    async def main():
-        async with CosmosClient(endpoint, credential=credential) as client:
-    ```
+   ```python
+   async def main():
+       async with CosmosClient(endpoint, credential=credential) as client:
+   ```
 
     > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to connect to the database and container you created earlier:
 
-    ```python
-    database = client.get_database_client("cosmicworks-full")
-    container = database.get_container_client("products")
-    ```
+   ```python
+   database = client.get_database_client("cosmicworks-full")
+   container = database.get_container_client("products")
+   ```
 
 1. Create a query string variable named `sql` with a value of `SELECT * FROM products p`.
 
-    ```python
-    sql = "SELECT * FROM products p"
-    ```
+   ```python
+   sql = "SELECT * FROM products p"
+   ```
 
 1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor.
 
-    ```python
-    result_iterator = container.query_items(
-        query=sql
-    )
-    ```
+   ```python
+   result_iterator = container.query_items(
+       query=sql
+   )
+   ```
 
 1. The **query_items** method returned an asynchronous iterator that we store in a variable named `result_iterator`. This means that each object from the iterator is an awaitable object and does not yet contain the query result. Add the code below to create an async **for** loop to await each query result as you iterate over the asynchronous iterator and print the `id`, `name`, and `price` of each item.
 
-    ```python
-    # Perform the query asynchronously
-    async for item in result_iterator:
-        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
-    ```
+   ```python
+   # Perform the query asynchronously
+   async for item in result_iterator:
+       print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+   ```
 
 1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
 
-    ```python
-    if __name__ == "__main__":
-        asyncio.run(query_items_async())
-    ```
+   ```python
+   if __name__ == "__main__":
+       asyncio.run(query_items_async())
+   ```
 
 1. Your **script.py** file should now look like this:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    from azure.identity.aio import DefaultAzureCredential
-    import asyncio
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   from azure.identity.aio import DefaultAzureCredential
+   import asyncio
 
-    endpoint = "<cosmos-endpoint>"
-    credential = DefaultAzureCredential()
+   endpoint = "<cosmos-endpoint>"
+   credential = DefaultAzureCredential()
 
-    async def main():
-        async with CosmosClient(endpoint, credential=credential) as client:
+   async def main():
+       async with CosmosClient(endpoint, credential=credential) as client:
 
-            database = client.get_database_client("cosmicworks-full")
-            container = database.get_container_client("products")
+           database = client.get_database_client("cosmicworks-full")
+           container = database.get_container_client("products")
     
-            sql = "SELECT * FROM products p"
+           sql = "SELECT * FROM products p"
             
-            result_iterator = container.query_items(
-                query=sql
-            )
+           result_iterator = container.query_items(
+               query=sql
+           )
             
-            # Perform the query asynchronously
-            async for item in result_iterator:
-                print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+           # Perform the query asynchronously
+           async for item in result_iterator:
+               print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+   if __name__ == "__main__":
+       asyncio.run(main())
+   ```
 
 1. **Save** the **script.py** file.
 
 1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```bash
-    az login
-    ```
+   ```bash
+   az login
+   ```
 
 1. Run the script to create the database and container:
 
-    ```bash
-    python script.py
-    ```
+   ```bash
+   python script.py
+   ```
 
 1. The script will now output every product in the container.
 
@@ -219,78 +219,78 @@ In this section, you will perform a query within a logical partition by includin
 
 1. Delete the following lines of code:
 
-    ```python
-    result_iterator = container.query_items(
-        query=sql
-    )
+   ```python
+   result_iterator = container.query_items(
+       query=sql
+   )
     
-    # Perform the query asynchronously
-    async for item in result_iterator:
-        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
-    ```
+   # Perform the query asynchronously
+   async for item in result_iterator:
+       print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+   ```
 
 1. Modify the script to create a **partition_key** variable to store the Category ID value for jerseys. Add the **partition_key** as a parameter to the **query_items** method. This ensures that the query is executed within the logical partition for the jerseys category.
 
-    ```python
-    partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
+   ```python
+   partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
 
-    result_iterator = container.query_items(
-        query=sql,
-        partition_key=partition_key
-    )
-    ```
+   result_iterator = container.query_items(
+       query=sql,
+       partition_key=partition_key
+   )
+   ```
 
 1. In the previous section, you performed an async for loop directly on the asynchronous iterator (`async for item in result_iterator:`). This time, you'll  asynchronously create a complete list of the actual query results. This code performs the same action as the for-loop example you previously used. Add the following lines of code to create a list of results and print the results:
 
-    ```python
-    item_list = [item async for item in result_iterator]
+   ```python
+   item_list = [item async for item in result_iterator]
 
-    for item in item_list:
-        print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
-    ```
+   for item in item_list:
+       print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+   ```
 
 1. Your **script.py** file should now look like this:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    from azure.identity.aio import DefaultAzureCredential
-    import asyncio
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   from azure.identity.aio import DefaultAzureCredential
+   import asyncio
 
-    endpoint = "<cosmos-endpoint>"
-    credential = DefaultAzureCredential()
+   endpoint = "<cosmos-endpoint>"
+   credential = DefaultAzureCredential()
 
-    async def main():
-        async with CosmosClient(endpoint, credential=credential) as client:
+   async def main():
+       async with CosmosClient(endpoint, credential=credential) as client:
 
-            database = client.get_database_client("cosmicworks-full")
-            container = database.get_container_client("products")
+           database = client.get_database_client("cosmicworks-full")
+           container = database.get_container_client("products")
     
-            sql = "SELECT * FROM products p"
+           sql = "SELECT * FROM products p"
             
-            partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
+           partition_key = "C3C57C35-1D80-4EC5-AB12-46C57A017AFB"
 
-            result_iterator = container.query_items(
-                query=sql,
-                partition_key=partition_key
-            )
+           result_iterator = container.query_items(
+               query=sql,
+               partition_key=partition_key
+           )
     
-            # Perform the query asynchronously
-            item_list = [item async for item in result_iterator]
+           # Perform the query asynchronously
+           item_list = [item async for item in result_iterator]
     
-            for item in item_list:
-                print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
+           for item in item_list:
+               print(f"[{item['id']}]	{item['name']}	${item['price']:.2f}")
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+   if __name__ == "__main__":
+       asyncio.run(main())
+   ```
 
 1. **Save** the **script.py** file.
 
 1. Run the script to create the database and container:
 
-    ```bash
-    python script.py
-    ```
+   ```bash
+   python script.py
+   ```
 
 1. The script will now output every product within the jersey category, effectively performing an in-partition query.
 

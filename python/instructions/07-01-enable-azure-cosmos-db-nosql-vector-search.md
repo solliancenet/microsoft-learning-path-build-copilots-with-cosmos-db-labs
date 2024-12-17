@@ -34,12 +34,12 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
 
 3. Enable the *Vector Search for NoSQL API* feature by executing the following command from the Azure Cloud Shell, replacing the `<RESOURCE_GROUP_NAME>` and `<COSMOS_DB_ACCOUNT_NAME>` tokens with the name of your resource group and Azure Cosmos DB account name, respectively.
 
-      ```bash
-      az cosmosdb update \
-        --resource-group <RESOURCE_GROUP_NAME> \
-        --name <COSMOS_DB_ACCOUNT_NAME> \
-        --capabilities EnableNoSQLVectorSearch
-      ```
+     ```bash
+     az cosmosdb update \
+       --resource-group <RESOURCE_GROUP_NAME> \
+       --name <COSMOS_DB_ACCOUNT_NAME> \
+       --capabilities EnableNoSQLVectorSearch
+     ```
 
 4. Wait for the command to run successfully before exiting the Cloud Shell.
 

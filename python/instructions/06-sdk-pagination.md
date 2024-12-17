@@ -60,34 +60,34 @@ The **azure-cosmos** library is available on **PyPI** for easy installation into
 
 1. Create and activate a virtual environment to manage dependencies:
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
-    ```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
+   ```
 
 1. Install the [azure-cosmos][pypi.org/project/azure-cosmos] package using the following command:
 
-    ```bash
-    pip install azure-cosmos
-    ```
+   ```bash
+   pip install azure-cosmos
+   ```
 
 1. Since we are using the asynchronous version of the SDK, we need to install the `asyncio` library as well:
 
-    ```bash
-    pip install asyncio
-    ```
+   ```bash
+   pip install asyncio
+   ```
 
 1. The asynchronous version of the SDK also requires the `aiohttp` library. Install it using the following command:
 
-    ```bash
-    pip install aiohttp
-    ```
+   ```bash
+   pip install aiohttp
+   ```
 
 1. Install the [azure-identity][pypi.org/project/azure-identity] library, which allows us to use Azure authentication to connect to the Azure Cosmos DB workspace, using the following command:
 
-    ```bash
-    pip install azure-identity
-    ```
+   ```bash
+   pip install azure-identity
+   ```
 
 ## Paginate through small result sets of a SQL query using the SDK
 
@@ -99,116 +99,116 @@ When processing query results, you must make sure your code progresses through a
 
 1. Add the following `import` statements to import the asynchronous **CosmosClient** class, **DefaultAzureCredential** class, and the **asyncio** library:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    from azure.identity.aio import DefaultAzureCredential
-    import asyncio
-    ```
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   from azure.identity.aio import DefaultAzureCredential
+   import asyncio
+   ```
 
 1. Add variables named **endpoint** and **credential** and set the **endpoint** value to the **endpoint** of the Azure Cosmos DB account you created earlier. The **credential** variable should be set to a new instance of the **DefaultAzureCredential** class:
 
-    ```python
-    endpoint = "<cosmos-endpoint>"
-    credential = DefaultAzureCredential()
-    ```
+   ```python
+   endpoint = "<cosmos-endpoint>"
+   credential = DefaultAzureCredential()
+   ```
 
     > &#128221; For example, if your endpoint is: **https://dp420.documents.azure.com:443/**, the statement would be: **endpoint = "https://dp420.documents.azure.com:443/"**.
 
 1. All interaction with Cosmos DB starts with an instance of the `CosmosClient`. In order to use the asynchronous client, we need to use async/await keywords, which can only be used within async methods. Create a new async method named **main** and add the following code to create a new instance of the asynchronous **CosmosClient** class using the **endpoint** and **credential** variables:
 
-    ```python
-    async def main():
-        async with CosmosClient(endpoint, credential=credential) as client:
-    ```
+   ```python
+   async def main():
+       async with CosmosClient(endpoint, credential=credential) as client:
+   ```
 
     > &#128161; Since we're using the asynchronous **CosmosClient** client, in order to properly use it you also have to warm it up and close it down. We recommend using the `async with` keywords as demonstrated in the code above to start your clients - these keywords create a context manager that automatically warms up, initializes, and cleans up the client, so you don't have to.
 
 1. Add the following code to connect to the database and container you created earlier:
 
-    ```python
-    database = client.get_database_client("cosmicworks-full")
-    container = database.get_container_client("products")
-    ```
+   ```python
+   database = client.get_database_client("cosmicworks-full")
+   container = database.get_container_client("products")
+   ```
 
 1. Create a new variable named **sql** of type *string* with a value of **SELECT * FROM products WHERE products.price > 500**:
 
-    ```python
-    sql = "SELECT * FROM products WHERE products.price > 500"
-    ```
+   ```python
+   sql = "SELECT * FROM products WHERE products.price > 500"
+   ```
 
 1. Invoke the [`query_items`](https://learn.microsoft.com/python/api/azure-cosmos/azure.cosmos.container.containerproxy?view=azure-python#azure-cosmos-container-containerproxy-query-items) method with the `sql` variable as a parameter to the constructor. Set the `max_item_count` to `50` to limit the number of items returned in each page.
 
-    ```python
-    iterator = container.query_items(
-        query=sql,
-        max_item_count=50  # Set maximum items per page
-    )
-    ```
+   ```python
+   iterator = container.query_items(
+       query=sql,
+       max_item_count=50  # Set maximum items per page
+   )
+   ```
 
 1. Create an async **for** loop that asynchronously invokes the [`by_page`](https://learn.microsoft.com/python/api/azure-core/azure.core.paging.itempaged?view=azure-python#azure-core-paging-itempaged-by-page) method on the iterator object. This method returns a page of results each time it is called.
 
-    ```python
-    async for page in iterator.by_page():
-    ```
+   ```python
+   async for page in iterator.by_page():
+   ```
 
 1. Within the async **for** loop, asynchronously iterate over the paginated results and print the `id`, `name`, and `price` of each item.
 
-    ```python
-    async for product in page:
-        print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
-    ```
+   ```python
+   async for product in page:
+       print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
+   ```
 
 1. Underneath the `main` method, add the following code to run the `main` method using the `asyncio` library:
 
-    ```python
-    if __name__ == "__main__":
-        asyncio.run(query_items_async())
-    ```
+   ```python
+   if __name__ == "__main__":
+       asyncio.run(query_items_async())
+   ```
 
 1. Your **script.py** file should now look like this:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    from azure.identity.aio import DefaultAzureCredential
-    import asyncio
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   from azure.identity.aio import DefaultAzureCredential
+   import asyncio
 
-    endpoint = "<cosmos-endpoint>"
-    credential = DefaultAzureCredential()
+   endpoint = "<cosmos-endpoint>"
+   credential = DefaultAzureCredential()
 
-    async def main():
-        async with CosmosClient(endpoint, credential=credential) as client:
-            # Get database and container clients
-            database = client.get_database_client("cosmicworks-full")
-            container = database.get_container_client("products")
+   async def main():
+       async with CosmosClient(endpoint, credential=credential) as client:
+           # Get database and container clients
+           database = client.get_database_client("cosmicworks-full")
+           container = database.get_container_client("products")
     
-            sql = "SELECT * FROM products WHERE products.price > 500"
+           sql = "SELECT * FROM products WHERE products.price > 500"
         
-            iterator = container.query_items(
-                query=sql,
-                max_item_count=50  # Set maximum items per page
-            )
+           iterator = container.query_items(
+               query=sql,
+               max_item_count=50  # Set maximum items per page
+           )
         
-            async for page in iterator.by_page():
-                async for product in page:
-                    print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
+           async for page in iterator.by_page():
+               async for product in page:
+                   print(f"[{product['id']}]	{product['name']}	${product['price']:.2f}")
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+   if __name__ == "__main__":
+       asyncio.run(main())
+   ```
 
 1. **Save** the **script.py** file.
 
 1. Before running the script, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```bash
-    az login
-    ```
+   ```bash
+   az login
+   ```
 
 1. Run the script to create the database and container:
 
-    ```bash
-    python script.py
-    ```
+   ```bash
+   python script.py
+   ```
 
 1. The script will now output pages of 50 items at a time.
 

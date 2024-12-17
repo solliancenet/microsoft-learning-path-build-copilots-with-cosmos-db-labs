@@ -155,20 +155,20 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
 3. You will be accessing Azure OpenAI and Cosmos DB asynchronously using Azure authentication and the Entra ID RBAC roles you previously assigned to your user identity. Add the following line below the `openai` import statement at the top of the file to import the required classes from the `azure-identity` library:
 
-    ```python
-    from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
-    ```
+   ```python
+   from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
+   ```
 
     > &#128221; To ensure you can securely interact with Azure services from your API, you will use the Azure Identity SDK for Python. This approach allows you to avoid having to store or interact with keys from code, instead leveraging the RBAC roles you assigned to your account for access to Azure Cosmos DB and Azure OpenAI in the previous exercises.
 
 4. Create variables to store the Azure OpenAI API version and endpoint, replacing the `<AZURE_OPENAI_ENDPOINT>` token with the endpoint value for your Azure OpenAI service. Also, create a variable for the name of your embedding model deployment. Insert the following code below the `import` statements in the file:
 
-    ```python
-    # Azure OpenAI configuration
-    AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
-    AZURE_OPENAI_API_VERSION = "2024-10-21"
-    EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
-    ```
+   ```python
+   # Azure OpenAI configuration
+   AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
+   AZURE_OPENAI_API_VERSION = "2024-10-21"
+   EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
+   ```
 
     If your embedding deployment name differs, update the value assigned to the variable accordingly.
 
@@ -178,59 +178,59 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
 5. Use the Azure Identity SDK for Python's `DefaultAzureCredential` class to create an asynchronous credential for accessing Azure OpenAI and Azure Cosmos DB using Microsoft Entra ID RBAC authentication by inserting the following code below the variable declarations:
 
-    ```python
-    # Enable Microsoft Entra ID RBAC authentication
-    credential = DefaultAzureCredential()
-    ```
+   ```python
+   # Enable Microsoft Entra ID RBAC authentication
+   credential = DefaultAzureCredential()
+   ```
 
 6. To handle the creation of embeddings, insert the following, which adds a function to generate embeddings using an Azure OpenAI client:
 
-    ```python
-    async def generate_embeddings(text: str):
-        """Generates embeddings for the provided text."""
-        # Create an async Azure OpenAI client
-        async with AsyncAzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-        ) as client:
-            response = await client.embeddings.create(
-                input = text,
-                model = EMBEDDING_DEPLOYMENT_NAME
-            )
-            return response.data[0].embedding
-    ```
+   ```python
+   async def generate_embeddings(text: str):
+       """Generates embeddings for the provided text."""
+       # Create an async Azure OpenAI client
+       async with AsyncAzureOpenAI(
+           api_version = AZURE_OPENAI_API_VERSION,
+           azure_endpoint = AZURE_OPENAI_ENDPOINT,
+           azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+       ) as client:
+           response = await client.embeddings.create(
+               input = text,
+               model = EMBEDDING_DEPLOYMENT_NAME
+           )
+           return response.data[0].embedding
+   ```
 
     Creation of the Azure OpenAI client does not require the `api_key` value because it is retrieving a bearer token using the Azure Identity SDK's `get_bearer_token_provider` class.
 
 7. The `main.py` file should now look similar to the following:
 
-    ```python
-    from openai import AsyncAzureOpenAI
-    from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
+   ```python
+   from openai import AsyncAzureOpenAI
+   from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
     
-    # Azure OpenAI configuration
-    AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
-    AZURE_OPENAI_API_VERSION = "2024-10-21"
-    EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
+   # Azure OpenAI configuration
+   AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
+   AZURE_OPENAI_API_VERSION = "2024-10-21"
+   EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
     
-    # Enable Microsoft Entra ID RBAC authentication
-    credential = DefaultAzureCredential()
+   # Enable Microsoft Entra ID RBAC authentication
+   credential = DefaultAzureCredential()
     
-    async def generate_embeddings(text: str):
-        """Generates embeddings for the provided text."""
-        # Create an async Azure OpenAI client
-        async with AsyncAzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-        ) as client:
-            response = await client.embeddings.create(
-                input = text,
-                model = EMBEDDING_DEPLOYMENT_NAME
-            )
-            return response.data[0].embedding
-    ```
+   async def generate_embeddings(text: str):
+       """Generates embeddings for the provided text."""
+       # Create an async Azure OpenAI client
+       async with AsyncAzureOpenAI(
+           api_version = AZURE_OPENAI_API_VERSION,
+           azure_endpoint = AZURE_OPENAI_ENDPOINT,
+           azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+       ) as client:
+           response = await client.embeddings.create(
+               input = text,
+               model = EMBEDDING_DEPLOYMENT_NAME
+           )
+           return response.data[0].embedding
+   ```
 
 8. Save the `main.py` file.
 
@@ -240,68 +240,68 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
 
 1. Add a **main guard** block containing a call to `generate_embeddings` at the bottom of the `main.py` file:
 
-    ```python
-    if __name__ == "__main__":
-        import asyncio
-        import sys
+   ```python
+   if __name__ == "__main__":
+       import asyncio
+       import sys
     
-        async def main():
-            print(await generate_embeddings(sys.argv[1]))
-            # Close open async credential sessions
-            await credential.close()
+       async def main():
+           print(await generate_embeddings(sys.argv[1]))
+           # Close open async credential sessions
+           await credential.close()
         
-        asyncio.run(main())
-    ```
+       asyncio.run(main())
+   ```
 
     > &#128221; The `if __name__ == "__main__":` block is commonly referred to as the **main guard** or **entry point** in Python. It ensures that certain code is only executed when the script is run directly, and not when it is imported as a module in another script. This practice helps in organizing code and makes it more reusable and modular.
 
 2. Save the `main.py` file, which should now look like:
 
-    ```python
-    from openai import AsyncAzureOpenAI
-    from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
+   ```python
+   from openai import AsyncAzureOpenAI
+   from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
     
-    # Azure OpenAI configuration
-    AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
-    AZURE_OPENAI_API_VERSION = "2024-10-21"
-    EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
+   # Azure OpenAI configuration
+   AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
+   AZURE_OPENAI_API_VERSION = "2024-10-21"
+   EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
     
-    # Enable Microsoft Entra ID RBAC authentication
-    credential = DefaultAzureCredential()
+   # Enable Microsoft Entra ID RBAC authentication
+   credential = DefaultAzureCredential()
     
-    async def generate_embeddings(text: str):
-        """Generates embeddings for the provided text."""
-        # Create an async Azure OpenAI client
-        async with AsyncAzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-        ) as client:
-            response = await client.embeddings.create(
-                input = text,
-                model = EMBEDDING_DEPLOYMENT_NAME
-            )
-            return response.data[0].embedding
+   async def generate_embeddings(text: str):
+       """Generates embeddings for the provided text."""
+       # Create an async Azure OpenAI client
+       async with AsyncAzureOpenAI(
+           api_version = AZURE_OPENAI_API_VERSION,
+           azure_endpoint = AZURE_OPENAI_ENDPOINT,
+           azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+       ) as client:
+           response = await client.embeddings.create(
+               input = text,
+               model = EMBEDDING_DEPLOYMENT_NAME
+           )
+           return response.data[0].embedding
 
-    if __name__ == "__main__":
-        import asyncio
-        import sys
+   if __name__ == "__main__":
+       import asyncio
+       import sys
     
-        async def main():
-            print(await generate_embeddings(sys.argv[1]))
-            # Close open async credential sessions
-            await credential.close()
+       async def main():
+           print(await generate_embeddings(sys.argv[1]))
+           # Close open async credential sessions
+           await credential.close()
         
-        asyncio.run(main())
-    ```
+       asyncio.run(main())
+   ```
 
 3. In Visual Studio Code, open a new integrated terminal window.
 
 4. Before running the API, which will send requests to Azure OpenAI, you must log into Azure using the `az login` command. At the terminal window, run:
 
-    ```bash
-    az login
-    ```
+   ```bash
+   az login
+   ```
 
 5. Complete the login process in your browser.
 
@@ -320,15 +320,15 @@ To ensure the `generate_embeddings` function in the `main.py` file is working co
 
 8. At the terminal prompt, change directories to `api/app`, then execute the following command:
 
-    ```python
-    python main.py "Hello, world!"
-    ```
+   ```python
+   python main.py "Hello, world!"
+   ```
 
 9. Observe the output in the terminal window. You should see an array of floating point number, which is the vector representation of the "Hello, world!" string. It should look similiar to the following abbreviated output:
 
-    ```bash
-    [-0.019184619188308716, -0.025279032066464424, -0.0017195191467180848, 0.01884828321635723...]
-    ```
+   ```bash
+   [-0.019184619188308716, -0.025279032066464424, -0.0017195191467180848, 0.01884828321635723...]
+   ```
 
 ## Build a function for writing data to Azure Cosmos DB
 
@@ -336,90 +336,90 @@ Using the Azure Cosmos DB SDK for Python, you can create a function that allows 
 
 1. Return to the open `main.py` file in Visual Studio Code and import the async `CosmosClient` class from the Azure Cosmos DB SDK for Python by inserting the following line just below the `import` statements already in the file:
 
-    ```python
-    from azure.cosmos.aio import CosmosClient
-    ```
+   ```python
+   from azure.cosmos.aio import CosmosClient
+   ```
 
 2. Add another import statement to reference the `Product` class from the *models* module in the `api/app` folder. The `Product` class defines the shape of products in the Cosmic Works dataset.
 
-    ```python
-    from models import Product
-    ```
+   ```python
+   from models import Product
+   ```
 
 3. Create a new group of variables containing configuration values associated with Azure Cosmos DB and add them to the `main.py` file below the Azure OpenAI variables you inserted previously. Ensure you replace the `<AZURE_COSMOSDB_ENDPOINT>` token with the endpoint for your Azure Cosmos DB account.
 
-    ```python
-    # Azure Cosmos DB configuration
-    AZURE_COSMOSDB_ENDPOINT = "<AZURE_COSMOSDB_ENDPOINT>"
-    DATABASE_NAME = "CosmicWorks"
-    CONTAINER_NAME = "Products"
-    ```
+   ```python
+   # Azure Cosmos DB configuration
+   AZURE_COSMOSDB_ENDPOINT = "<AZURE_COSMOSDB_ENDPOINT>"
+   DATABASE_NAME = "CosmicWorks"
+   CONTAINER_NAME = "Products"
+   ```
 
 4. Add a function named `upsert_product` for upserting (update or insert) documents into Cosmos DB, inserting the following code below the `generate_embeddings` function in the `main.py` file:
 
-    ```python
-    async def upsert_product(product: Product):
-        """Upserts the provided product to the Cosmos DB container."""
-        # Create an async Cosmos DB client
-        async with CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential) as client:
-            # Load the CosmicWorks database
-            database = client.get_database_client(DATABASE_NAME)
-            # Retrieve the product container
-            container = database.get_container_client(CONTAINER_NAME)
-            # Upsert the product
-            await container.upsert_item(product)
-    ```
+   ```python
+   async def upsert_product(product: Product):
+       """Upserts the provided product to the Cosmos DB container."""
+       # Create an async Cosmos DB client
+       async with CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential) as client:
+           # Load the CosmicWorks database
+           database = client.get_database_client(DATABASE_NAME)
+           # Retrieve the product container
+           container = database.get_container_client(CONTAINER_NAME)
+           # Upsert the product
+           await container.upsert_item(product)
+   ```
 
 5. Save the `main.py` file, which should now look like:
 
-    ```python
-    from openai import AsyncAzureOpenAI
-    from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
-    from azure.cosmos.aio import CosmosClient
-    from models import Product
+   ```python
+   from openai import AsyncAzureOpenAI
+   from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
+   from azure.cosmos.aio import CosmosClient
+   from models import Product
     
-    # Azure OpenAI configuration
-    AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
-    AZURE_OPENAI_API_VERSION = "2024-10-21"
-    EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
+   # Azure OpenAI configuration
+   AZURE_OPENAI_ENDPOINT = "<AZURE_OPENAI_ENDPOINT>"
+   AZURE_OPENAI_API_VERSION = "2024-10-21"
+   EMBEDDING_DEPLOYMENT_NAME = "text-embedding-3-small"
 
-    # Azure Cosmos DB configuration
-    AZURE_COSMOSDB_ENDPOINT = "<AZURE_COSMOSDB_ENDPOINT>"
-    DATABASE_NAME = "CosmicWorks"
-    CONTAINER_NAME = "Products"
+   # Azure Cosmos DB configuration
+   AZURE_COSMOSDB_ENDPOINT = "<AZURE_COSMOSDB_ENDPOINT>"
+   DATABASE_NAME = "CosmicWorks"
+   CONTAINER_NAME = "Products"
     
-    # Enable Microsoft Entra ID RBAC authentication
-    credential = DefaultAzureCredential()
+   # Enable Microsoft Entra ID RBAC authentication
+   credential = DefaultAzureCredential()
     
-    async def generate_embeddings(text: str):
-        """Generates embeddings for the provided text."""
-        # Create an async Azure OpenAI client
-        async with AsyncAzureOpenAI(
-            api_version = AZURE_OPENAI_API_VERSION,
-            azure_endpoint = AZURE_OPENAI_ENDPOINT,
-            azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-        ) as client:
-            response = await client.embeddings.create(
-                input = text,
-                model = EMBEDDING_DEPLOYMENT_NAME
-            )
-            return response.data[0].embedding
+   async def generate_embeddings(text: str):
+       """Generates embeddings for the provided text."""
+       # Create an async Azure OpenAI client
+       async with AsyncAzureOpenAI(
+           api_version = AZURE_OPENAI_API_VERSION,
+           azure_endpoint = AZURE_OPENAI_ENDPOINT,
+           azure_ad_token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
+       ) as client:
+           response = await client.embeddings.create(
+               input = text,
+               model = EMBEDDING_DEPLOYMENT_NAME
+           )
+           return response.data[0].embedding
 
-    async def upsert_product(product: Product):
-        """Upserts the provided product to the Cosmos DB container."""
-        # Create an async Cosmos DB client
-        async with CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential) as client:
-            # Load the CosmicWorks database
-            database = client.get_database_client(DATABASE_NAME)
-            # Retrieve the product container
-            container = database.get_container_client(CONTAINER_NAME)
-            # Upsert the product
-            await container.upsert_item(product)
+   async def upsert_product(product: Product):
+       """Upserts the provided product to the Cosmos DB container."""
+       # Create an async Cosmos DB client
+       async with CosmosClient(url=AZURE_COSMOSDB_ENDPOINT, credential=credential) as client:
+           # Load the CosmicWorks database
+           database = client.get_database_client(DATABASE_NAME)
+           # Retrieve the product container
+           container = database.get_container_client(CONTAINER_NAME)
+           # Upsert the product
+           await container.upsert_item(product)
     
-    if __name__ == "__main__":
-        import sys
-        print(generate_embeddings(sys.argv[1]))
-    ```
+   if __name__ == "__main__":
+       import sys
+       print(generate_embeddings(sys.argv[1]))
+   ```
 
 ## Vectorize sample data
 
@@ -429,34 +429,34 @@ You are now ready to test both the `generate_embeddings` and `upsert_document` f
 
 1. In the `main.py` file, overwrite the `if __name__ == "__main__":` code block with the following:
 
-    ```python
-    if __name__ == "__main__":
-        import asyncio
-        from models import Product
-        import requests
+   ```python
+   if __name__ == "__main__":
+       import asyncio
+       from models import Product
+       import requests
     
-        async def main():
-            product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json?v=1"
-            products = [Product(**data) for data in requests.get(product_raw_data).json()]
+       async def main():
+           product_raw_data = "https://raw.githubusercontent.com/solliancenet/microsoft-learning-path-build-copilots-with-cosmos-db-labs/refs/heads/main/data/07/products.json?v=1"
+           products = [Product(**data) for data in requests.get(product_raw_data).json()]
     
-            # Call the generate_embeddings function, passing in an argument from the command line.    
-            for product in products:
-                print(f"Generating embeddings for product: {product.name}", end="\r")
-                product.embedding = await generate_embeddings(product.description)
-                await upsert_product(product.model_dump())
+           # Call the generate_embeddings function, passing in an argument from the command line.    
+           for product in products:
+               print(f"Generating embeddings for product: {product.name}", end="\r")
+               product.embedding = await generate_embeddings(product.description)
+               await upsert_product(product.model_dump())
     
-            print("All products with vectorized descriptions have been upserted to the Cosmos DB container.")
-            # Close open credential sessions
-            await credential.close()
+           print("All products with vectorized descriptions have been upserted to the Cosmos DB container.")
+           # Close open credential sessions
+           await credential.close()
     
-        asyncio.run(main())
-    ```
+       asyncio.run(main())
+   ```
 
 2. At the open integrated terminal prompt in Visual Studio Code, run the `main.py` file again using the command:
 
-    ```python
-    python main.py
-    ```
+   ```python
+   python main.py
+   ```
 
 3. Wait for the code execution to complete, indicated by a message indicating all products with vectorized descriptions have been upserted to the Cosmos DB container. It may take up to five minutes for the vectorization and data upsert process to complete for the 295 records in the products dataset.
 
