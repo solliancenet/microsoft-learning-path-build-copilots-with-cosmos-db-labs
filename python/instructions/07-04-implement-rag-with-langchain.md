@@ -97,7 +97,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
    from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
    ```
 
-2. Import the following additional LangChain objects that will be used when building out the revised `/chat` endpoint:
+1. Import the following additional LangChain objects that will be used when building out the revised `/chat` endpoint:
 
    ```python
    from langchain.agents import AgentExecutor, create_openai_functions_agent
@@ -105,7 +105,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
    from langchain_core.tools import StructuredTool
    ```
 
-3. The chat history will be injected into the copilot conversation differently using a LangChain agent, so delete the lines of code immediately following the `system_prompt` definition. The line you should delete are:
+1. The chat history will be injected into the copilot conversation differently using a LangChain agent, so delete the lines of code immediately following the `system_prompt` definition. The line you should delete are:
 
    ```python
    # Provide the copilot with a persona using the system prompt.
@@ -119,7 +119,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
    messages.append({"role": "user", "content": request.message})
    ```
 
-4. In place of the code you just deleted, define a `prompt` object using LangChain's `ChatPromptTemplate` class:
+1. In place of the code you just deleted, define a `prompt` object using LangChain's `ChatPromptTemplate` class:
 
    ```python
    prompt = ChatPromptTemplate.from_messages(
@@ -141,7 +141,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     The resulting prompt provides a structured input for the conversational AI agent, helping it to generate a response based on the given context.
 
-5. Next, replace the `tools` array definition with the following, which uses LangChain's `StructuredTool` class to extract function definitions into the proper format:
+1. Next, replace the `tools` array definition with the following, which uses LangChain's `StructuredTool` class to extract function definitions into the proper format:
 
    ```python
    tools = [
@@ -157,7 +157,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     Using this function automates the creation of the JSON function definitions you had to manually create using the Azure OpenAI client, simplifying the process of function calling.
 
-6. Delete all of the code between the `tools` array definition you completed above and the `return` statement at the end of the function. Using the Azure OpenAI client, you had to make two calls the the language model. The first to allow it to determine what function calls, if any, it needs to make to augment the prompt, and the second to ask for a RAG completion. In between, you had to use code to inspect the response from the first call to determine if function calls were required, and then write code to "handle" calling those functions. You then had to insert the output of those function calls into the messages being sent to the LLM, so it could have the enriched prompt to reason of when formulating a completion response. LangChain greatly simplifies the process of calling an LLM using a RAG pattern, as you will see below. The code you should remove is:
+1. Delete all of the code between the `tools` array definition you completed above and the `return` statement at the end of the function. Using the Azure OpenAI client, you had to make two calls the the language model. The first to allow it to determine what function calls, if any, it needs to make to augment the prompt, and the second to ask for a RAG completion. In between, you had to use code to inspect the response from the first call to determine if function calls were required, and then write code to "handle" calling those functions. You then had to insert the output of those function calls into the messages being sent to the LLM, so it could have the enriched prompt to reason of when formulating a completion response. LangChain greatly simplifies the process of calling an LLM using a RAG pattern, as you will see below. The code you should remove is:
 
    ```python
    # Create Azure OpenAI client
@@ -222,7 +222,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
    )
    ```
 
-7. Working from just below the `tools` array definition, create a reference to the Azure OpenAI API using the `AzureChatOpenAI` class in LangChain:
+1. Working from just below the `tools` array definition, create a reference to the Azure OpenAI API using the `AzureChatOpenAI` class in LangChain:
 
    ```python
    # Connect to Azure OpenAI API
@@ -231,10 +231,10 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
        azure_endpoint=AZURE_OPENAI_ENDPOINT,
        azure_ad_token_provider=get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default"),
        api_version=AZURE_OPENAI_API_VERSION
-    
+   )
    ```
 
-8. To allow your LangChain agent to interact with the functions you've defined, you will create an agent using the `create_openai_functions_agent` method, to which you will provide the `AzureChatOpenAI` objedt, `tools` array, and `ChatPromptTemplate` object:
+1. To allow your LangChain agent to interact with the functions you've defined, you will create an agent using the `create_openai_functions_agent` method, to which you will provide the `AzureChatOpenAI` objedt, `tools` array, and `ChatPromptTemplate` object:
 
    ```python
    agent = create_openai_functions_agent(llm=azure_openai, tools=tools, prompt=prompt)
@@ -242,7 +242,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     The `create_openai_functions_agent` function in LangChain creates an agent that can call external functions to perform tasks using a specified language model and tools. This enables the integration of various services and functionalities into the agent's workflow, providing flexibility and enhanced capabilities.
 
-9. In LangChain, the `AgentExecutor` class is used to manage the execution flow of the agents, such as the one you created with the `create_openai_functions_agent` method. It handles the processing of inputs, the invocation of tools or models, and the handling of outputs. Use the below code to create an agent executor for your agent:
+1. In LangChain, the `AgentExecutor` class is used to manage the execution flow of the agents, such as the one you created with the `create_openai_functions_agent` method. It handles the processing of inputs, the invocation of tools or models, and the handling of outputs. Use the below code to create an agent executor for your agent:
 
    ```python
    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
@@ -250,7 +250,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
     The `AgentExecutor` ensures that all the steps required to generate a response are executed in the correct order. It abstracts the complexities of execution for agents, providing an additional layer of functionality and structure, and making it easier to build, manage, and scale sophisticated agents.
 
-10. You will use the agent executor's `invoke` method to send the incoming user message to the LLM. You will also include the chat history. Insert the following code below the `agent_executor` definition:
+1. You will use the agent executor's `invoke` method to send the incoming user message to the LLM. You will also include the chat history. Insert the following code below the `agent_executor` definition:
 
    ```python
    completion = await agent_executor.ainvoke({"input": request.message, "chat_history": request.chat_history[-request.max_history:]})
@@ -258,13 +258,13 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
    The `input` and `chat_history` tokens were defined in the prompt object created using the `ChatPromptTemplate`. With the `invoke` method, these will be injected into the prompt, allowing the LLM to use that information when creating a response.
 
-11. Finally, update the return statement to use the `output` of the agent's completion object:
+1. Finally, update the return statement to use the `output` of the agent's completion object:
 
    ```python
    return completion["output"]
    ```
 
-12. Save the `main.py` file. The updated `/chat` endpoint function should now look like this:
+1. Save the `main.py` file. The updated `/chat` endpoint function should now look like this:
 
    ```python
    @app.post('/chat')
@@ -318,17 +318,17 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
 
 1. To start the API, open a new integrated terminal window in Visual Studio Code.
 
-2. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
+1. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
 
    ```bash
    az login
    ```
 
-3. Complete the login process in your browser.
+1. Complete the login process in your browser.
 
-4. Change directories to `python/07-build-copilot` at the terminal prompt.
+1. Change directories to `python/07-build-copilot` at the terminal prompt.
 
-5. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
+1. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -339,38 +339,38 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-6. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
+1. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
 
    ```bash
    uvicorn main:app
    ```
 
-7. Open a new integrated terminal window, change directories to `python/07-build-copilot` to activate your Python environment, then change directories to the `ui` folder and run the following to start your UI app:
+1. Open a new integrated terminal window, change directories to `python/07-build-copilot` to activate your Python environment, then change directories to the `ui` folder and run the following to start your UI app:
 
    ```bash
    python -m streamlit run index.py
    ```
 
-8. If the UI does not open automatically in a browser window, launch a new browser tab or window and navigate to <http://localhost:8501> to open the UI.
+1. If the UI does not open automatically in a browser window, launch a new browser tab or window and navigate to <http://localhost:8501> to open the UI.
 
 ## Test the copilot
 
 1. Before sending messages into the UI, return to Visual Studio Code and select the integrated terminal window associated with the API app. Within this window, you will see the "verbose" ouptut generated by the LangChain agent executor, which provides insights into how LangChain is handling the requests you send in. Pay attention to the output in this window as you send in the below requests, checking back in after each call.
 
-2. At the chat prompt in the UI, enter "Apply a discount" and send the message.
+1. At the chat prompt in the UI, enter "Apply a discount" and send the message.
 
     You should receive a reply asking for the discount percentage you would like to appy, and for what product category.
 
-3. Reply, "Gloves."
+1. Reply, "Gloves."
 
     You will receive a response asking for what discount percentage would you like to apply to the "Gloves" category.
 
-4. Send a message of "25%."
+1. Send a message of "25%."
 
     You should get a response of "A 25% discount has been successfully applied to all products in the "Gloves" category."
 
-5. Ask the copilot to "show me all gloves."
+1. Ask the copilot to "show me all gloves."
 
     In the reply, you should see a list of all gloves in database, which will include the 25% discount price.
 
-6. Finally, ask "What gloves are best cold weather riding?" to perform a vector search. This involves a function call to the `get_similar_items` method, which then calls both the `generate_embeddings` method you updated to use a LangChain implementation and the `vector_search` function.
+1. Finally, ask "What gloves are best cold weather riding?" to perform a vector search. This involves a function call to the `get_similar_items` method, which then calls both the `generate_embeddings` method you updated to use a LangChain implementation and the `vector_search` function.
