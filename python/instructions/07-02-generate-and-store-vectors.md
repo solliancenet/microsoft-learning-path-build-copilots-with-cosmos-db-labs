@@ -137,6 +137,7 @@ Virtual environments in Python are essential for maintaining a clean and organiz
     | `requests` | 2.32.3 | Send HTTP requests. |
     | `streamlit` | 1.40.2 | Transforms Python scripts into interactive web apps. |
     | `uvicorn` | 0.32.1 | An ASGI web server implementation for Python. |
+    | `httpx` | 0.27.2 | A next-generation HTTP client for Python. |
 
 ## Add a Python function to vectorize text
 
@@ -148,9 +149,9 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
 2. To use the asychronous Azure OpenAI SDK for Python, import the library by adding the following code to the top of the `main.py` file:
 
-    ```python
-    from openai import AsyncAzureOpenAI
-    ```
+```python
+from openai import AsyncAzureOpenAI
+```
 
 3. You will be accessing Azure OpenAI and Cosmos DB asynchronously using Azure authentication and the Entra ID RBAC roles you previously assigned to your user identity. Add the following line below the `openai` import statement at the top of the file to import the required classes from the `azure-identity` library:
 
