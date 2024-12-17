@@ -1,7 +1,7 @@
 ---
-title: '07 - Generate vector embeddings with Azure OpenAI and store them in Azure Cosmos DB for NoSQL'
+title: '07.2 - Generate vector embeddings with Azure OpenAI and store them in Azure Cosmos DB for NoSQL'
 lab:
-    title: '07 - Generate vector embeddings with Azure OpenAI and store them in Azure Cosmos DB for NoSQL'
+    title: '07.2 - Generate vector embeddings with Azure OpenAI and store them in Azure Cosmos DB for NoSQL'
     module: 'Build copilots with Python and Azure Cosmos DB for NoSQL'
 layout: default
 nav_order: 11

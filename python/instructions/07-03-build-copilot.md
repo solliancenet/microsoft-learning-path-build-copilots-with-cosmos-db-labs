@@ -1,7 +1,7 @@
 ---
-title: '07 - Build a copilot with Python and Azure Cosmos DB for NoSQL'
+title: '07.3 - Build a copilot with Python and Azure Cosmos DB for NoSQL'
 lab:
-    title: '07 - Build a copilot with Python and Azure Cosmos DB for NoSQL'
+    title: '07.3 - Build a copilot with Python and Azure Cosmos DB for NoSQL'
     module: 'Build copilots with Python and Azure Cosmos DB for NoSQL'
 layout: default
 nav_order: 12
