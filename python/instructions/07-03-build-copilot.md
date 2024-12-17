@@ -28,9 +28,9 @@ The backend API for the copilot enriches its abilities to handle intricate data,
 
 1. Using Visual Studio Code, open the folder into which you cloned the lab code repository for **Build copilots with Azure Cosmos DB** learning module.
 
-2. In the **Explorer** pane within Visual Studio Code, browse to the **python/07-build-copilot/api/app** folder and open the `main.py` file found within it.
+1. In the **Explorer** pane within Visual Studio Code, browse to the **python/07-build-copilot/api/app** folder and open the `main.py` file found within it.
 
-3. Add the following lines of code below the existing `import` statements at the top of the `main.py` file to bring in the libraries that will be used to perform asychronous actions using FastAPI:
+1. Add the following lines of code below the existing `import` statements at the top of the `main.py` file to bring in the libraries that will be used to perform asychronous actions using FastAPI:
 
    ```python
    from contextlib import asynccontextmanager
@@ -38,13 +38,13 @@ The backend API for the copilot enriches its abilities to handle intricate data,
    import json
    ```
 
-4. To enable the `/chat` endpoint you will create to receive data in the request body, you will pass content in via a `CompletionRequest` object defined in the projects *models* module. Update the `from models import Product` import statement at the top of the file to include the `CompletionRequest` class from the `models` module. The import statement should now look like this:
+1. To enable the `/chat` endpoint you will create to receive data in the request body, you will pass content in via a `CompletionRequest` object defined in the projects *models* module. Update the `from models import Product` import statement at the top of the file to include the `CompletionRequest` class from the `models` module. The import statement should now look like this:
 
    ```python
    from models import Product, CompletionRequest
    ```
 
-5. You will need the deployment name of the chat completion model you created in your Azure OpenAI Service. Create a variable at the bottom of the Azure OpenAI configuration variable block to provide this:
+1. You will need the deployment name of the chat completion model you created in your Azure OpenAI Service. Create a variable at the bottom of the Azure OpenAI configuration variable block to provide this:
 
    ```python
    COMPLETION_DEPLOYMENT_NAME = 'gpt-4o'
@@ -52,7 +52,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
 
     If your completion deployment name differs, update the value assigned to the variable accordingly.
 
-6. The Azure Cosmos DB and Identity SDKs provide async methods for working with those services. Each of these classes will used in multiple functions in your API, so you will create global instances of each, allowing the same client to be shared across methods. Insert the following global variable declarations below the Cosmos DB configuration variables block:
+1. The Azure Cosmos DB and Identity SDKs provide async methods for working with those services. Each of these classes will used in multiple functions in your API, so you will create global instances of each, allowing the same client to be shared across methods. Insert the following global variable declarations below the Cosmos DB configuration variables block:
 
    ```python
    # Create a global async Cosmos DB client
@@ -61,14 +61,14 @@ The backend API for the copilot enriches its abilities to handle intricate data,
    credential = None
    ```
 
-7. Delete the following lines of code from the file, as the functionality provided will be moved into the `lifespan` function you will define in the next step:
+1. Delete the following lines of code from the file, as the functionality provided will be moved into the `lifespan` function you will define in the next step:
 
    ```python
    # Enable Microsoft Entra ID RBAC authentication
    credential = DefaultAzureCredential()
    ```
 
-8. To create singleton instances of the `CosmosClient` and `DefaultAzureCredentail` classes, you will take advantage of the `lifespan` object in FastAPI: This method manages those classes through the lifecycle of the API app. Insert the following code to define the `lifespan`:
+1. To create singleton instances of the `CosmosClient` and `DefaultAzureCredentail` classes, you will take advantage of the `lifespan` object in FastAPI: This method manages those classes through the lifecycle of the API app. Insert the following code to define the `lifespan`:
 
    ```python
    @asynccontextmanager
@@ -84,17 +84,17 @@ The backend API for the copilot enriches its abilities to handle intricate data,
        await credential.close()
    ```
 
-    In FastAPI, lifespan events are special operations that run at the beginning and end of the application's life cycle. These operations execute before the app starts handling requests and after it stops, making them ideal for initializing and cleaning up resources that are used across the entire application and shared between requests. This approach ensures that necessary setup is completed before any requests are processed and that resources are properly managed when shutting down.
+   In FastAPI, lifespan events are special operations that run at the beginning and end of the application's life cycle. These operations execute before the app starts handling requests and after it stops, making them ideal for initializing and cleaning up resources that are used across the entire application and shared between requests. This approach ensures that necessary setup is completed before any requests are processed and that resources are properly managed when shutting down.
 
-9. Create an instance of the FastAPI class using the following code. This should be inserted below the `lifespan` function:
+1. Create an instance of the FastAPI class using the following code. This should be inserted below the `lifespan` function:
 
    ```python
    app = FastAPI(lifespan=lifespan)
    ```
 
-    By calling `FastAPI()`, you are initializing a new instance of the FastAPI application. This instance, referred to as `app`, will serve as the main entry point for your web application. Passing in the `lifespan` attaches the lifespan event handler to your app.
+   By calling `FastAPI()`, you are initializing a new instance of the FastAPI application. This instance, referred to as `app`, will serve as the main entry point for your web application. Passing in the `lifespan` attaches the lifespan event handler to your app.
 
-10. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
+1. Next, stub out the endpoints for your API. The `api_status` method is attached to the root URL of your API and acts as a status message to show that the API is up and running correctly. You will build out the `/chat` endpoint later in this exercise. Insert the following code below the code for creating the Cosmos DB client, database and container:
 
    ```python
    @app.get("/")
@@ -108,7 +108,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
        raise NotImplementedError("The chat endpoint is not implemented yet.")
    ```
 
-11. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
+1. Overwrite the main guard block at the bottom of the file to start the `uvicorn` ASGI (Asynchronous Server Gateway Interface) web server when the file is run from the command line:
 
    ```python
    if __name__ == "__main__":
@@ -116,7 +116,7 @@ The backend API for the copilot enriches its abilities to handle intricate data,
        uvicorn.run(app, host="0.0.0.0", port=8000)
    ```
 
-12. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
+1. Save the `main.py` file. It should now look like the following, including the `generate_embeddings` and `upsert_product` methods you added in the pervious exercise:
 
    ```python
    from openai import AsyncAzureOpenAI
@@ -195,19 +195,19 @@ The backend API for the copilot enriches its abilities to handle intricate data,
        uvicorn.run(app, host="0.0.0.0", port=8000)
    ```
 
-13. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
+1. To quickly test your API, open a new integrated terminal window in Visual Studio Code.
 
-14. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
+1. Ensure you are logged into Azure using the `az login` command. Running the following at the terminal prompt:
 
    ```bash
    az login
    ```
 
-15. Complete the login process in your browser.
+1. Complete the login process in your browser.
 
-16. Change directories to `python/07-build-copilot` at the terminal prompt.
+1. Change directories to `python/07-build-copilot` at the terminal prompt.
 
-17. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
+1. Ensure the integrated terminal window runs within your Python virtual environment by activating it using a command from the table below and selecting the appropriate command for your OS and shell.
 
     | Platform | Shell | Command to activate virtual environment |
     | -------- | ----- | --------------------------------------- |
@@ -218,21 +218,21 @@ The backend API for the copilot enriches its abilities to handle intricate data,
     | Windows | cmd.exe | `.venv\Scripts\activate.bat` |
     | | PowerShell | `.venv\Scripts\Activate.ps1` |
 
-18. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
+1. At the terminal prompt, change directories to `api/app`, then execute the following command to run the FastAPI web app:
 
    ```bash
    uvicorn main:app
    ```
 
-19. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>.
+1. If one does not open automatically, launch a new web browser window or tab and go to <http://127.0.0.1:8000>.
 
     A message of `{"status":"ready"}` in the browser window indicates your API is running.
 
-20. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
+1. Navigate to the Swagger UI for the API by appending `/docs` to the end of the URL: <http://127.0.0.1:8000/docs>.
 
     > &#128221; The Swagger UI is an interactive, web-based interface for exploring and testing API endpoints generated from OpenAPI specifications. It allows developers and users to visualize, interact with, and debug real-time API calls, enhancing usability and documentation.
 
-21. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
+1. Return to Visual Studio Code and stop the API app by pressing **CTRL+C** in the associated integrated terminal window.
 
 ## Incorporate product data from Azure Cosmos DB
 
