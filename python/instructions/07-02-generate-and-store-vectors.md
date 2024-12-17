@@ -44,9 +44,9 @@ To use Azure OpenAI to generate embeddings, you must first deploy an instance of
 
 1. Navigate to your newly created Azure OpenAI service in the Azure portal (``portal.azure.com``).
 
-2. On the **Overview** page of the Azure OpenAI service, launch **Azure AI Studio** by selecting the **Go to Azure AI Studio** link on the toolbar.
+2. On the **Overview** page of the Azure OpenAI service, launch **Azure AI Foundry** by selecting the **Go to Azure AI Foundry portal** link on the toolbar.
 
-3. In Azure AI Studio, select **Deployments** from the left-hand menu.
+3. In Azure AI Foundry, select **Deployments** from the left-hand menu.
 
 4. On the **Model deployments** page, select **Deploy model** and select **Deploy base model** from the dropdown.
 
@@ -58,19 +58,19 @@ To use Azure OpenAI to generate embeddings, you must first deploy an instance of
 
 6. Select **Confirm** to deploy the model.
 
-7. On the **Model deployments** page in Azure AI Studio, note the **Name** of the `text-embedding-3-small` model deployment, as you will need this later in this exercise.
+7. On the **Model deployments** page in Azure AI Foundry, note the **Name** of the `text-embedding-3-small` model deployment, as you will need this later in this exercise.
 
 ## Deploy a chat completion model
 
 In addition to the embedding model, you will need a chat completion model for your copilot. You will use OpenAI's `gpt-4o` large language model to generate responses from your copilot.
 
-1. While still on the **Model deployments** page in Azure AI Studio, select the **Deploy model** button again and choose **Deploy base model** from the dropdown.
+1. While still on the **Model deployments** page in Azure AI Foundry, select the **Deploy model** button again and choose **Deploy base model** from the dropdown.
 
 2. Select the **gpt-4o** chat completion model from the list.
 
 3. Select **Confirm** to deploy the model.
 
-4. On the **Model deployments** page in Azure AI Studio, note the **Name** of the `gpt-4o` model deployment, as you will need this later in this exercise.
+4. On the **Model deployments** page in Azure AI Foundry, note the **Name** of the `gpt-4o` model deployment, as you will need this later in this exercise.
 
 ## Assign the Cognitive Services OpenAI User RBAC role
 
@@ -173,7 +173,7 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
     > &#128161; The API version of `2024-10-21` was the latest GA release version as of the time of this writing. You can use that or a new version, if one is available. The API specs documentation contains a [table with the latest API versions](https://learn.microsoft.com/azure/ai-services/openai/reference#api-specs).
 
-    > &#128221; The `EMBEDDING_DEPLOYMENT_NAME` is the **Name** value you noted after deploying the `text-embedding-3-small` model in Azure AI Studio. If you need to refer back to it, launch Azure AI Studio, navigate to the **Deployments** page and locate the deployment whose **Model name** is `text-embedding-3-small`. Then, copy the **Name** field value of that item. If you deployed the `text-embedding-ada-002` model, use the name for that deployment.
+    > &#128221; The `EMBEDDING_DEPLOYMENT_NAME` is the **Name** value you noted after deploying the `text-embedding-3-small` model in Azure AI Foundry. If you need to refer back to it, launch Azure AI Foundry, navigate to the **Deployments** page and locate the deployment whose **Model name** is `text-embedding-3-small`. Then, copy the **Name** field value of that item. If you deployed the `text-embedding-ada-002` model, use the name for that deployment.
 
 5. Use the Azure Identity SDK for Python's `DefaultAzureCredential` class to create an asynchronous credential for accessing Azure OpenAI and Azure Cosmos DB using Microsoft Entra ID RBAC authentication by inserting the following code below the variable declarations:
 
