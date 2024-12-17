@@ -407,7 +407,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
    if response_message.tool_calls:
        for call in response_message.tool_calls:
            if call.function.name == "apply_discount":
-               func_response = apply_discount(**json.loads(call.function.arguments))
+               func_response = await apply_discount(**json.loads(call.function.arguments))
                messages.append(
                    {
                        "role": "tool",
@@ -417,7 +417,7 @@ The `/chat` endpoint on the backend API serves as the interface through which th
                    }
                )
            elif call.function.name == "get_category_names":
-               func_response = get_category_names()
+               func_response = await get_category_names()
                messages.append(
                    {
                        "role": "tool",
@@ -620,7 +620,7 @@ The Streamlit UI provides a interface for users to interact with your copilot.
                    st.markdown(prompt)
                 
                # Send the user message to the copilot API
-               response = await send_message_to_copilot(prompt, st.session_state.messages)            
+               response = await send_message_to_copilot(prompt, st.session_state.messages)
     
                # Display assistant response in chat message container
                with st.chat_message("assistant"):
@@ -752,7 +752,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
 
    ```python
    elif call.function.name == "get_similar_products":
-       func_response = get_similar_products(**json.loads(call.function.arguments))
+       func_response = await get_similar_products(**json.loads(call.function.arguments))
        messages.append(
            {
                "role": "tool",
@@ -770,7 +770,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
    if response_message.tool_calls:
        for call in response_message.tool_calls:
            if call.function.name == "apply_discount":
-               func_response = apply_discount(**json.loads(call.function.arguments))
+               func_response = await apply_discount(**json.loads(call.function.arguments))
                messages.append(
                    {
                        "role": "tool",
@@ -780,7 +780,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
                    }
                )
            elif call.function.name == "get_category_names":
-               func_response = get_category_names()
+               func_response = await get_category_names()
                messages.append(
                    {
                        "role": "tool",
@@ -790,7 +790,7 @@ So far, you have given the copilot the ability to perform actions to apply disco
                    }
                )
            elif call.function.name == "get_similar_products":
-               func_response = get_similar_products(**json.loads(call.function.arguments))
+               func_response = await get_similar_products(**json.loads(call.function.arguments))
                messages.append(
                    {
                        "role": "tool",
