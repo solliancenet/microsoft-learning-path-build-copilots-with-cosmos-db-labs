@@ -73,3 +73,5 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
       ![Screenshot of the Container Vector Policy specified above entered into the New Container dialog.](media/07-azure-cosmos-db-container-vector-policy.png)
 
    6. Select **OK** to create the database and container.
+
+   7. Wait for the container to be created before proceeding. It may take several minutes for the container to be ready.
