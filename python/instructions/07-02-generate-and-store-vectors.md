@@ -149,9 +149,9 @@ The Python SDK for Azure OpenAI provides access to both synchronous and asynchro
 
 2. To use the asychronous Azure OpenAI SDK for Python, import the library by adding the following code to the top of the `main.py` file:
 
-    ```python
-    from openai import AsyncAzureOpenAI
-    ```
+   ```python
+   from openai import AsyncAzureOpenAI
+   ```
 
 3. You will be accessing Azure OpenAI and Cosmos DB asynchronously using Azure authentication and the Entra ID RBAC roles you previously assigned to your user identity. Add the following line below the `openai` import statement at the top of the file to import the required classes from the `azure-identity` library:
 
