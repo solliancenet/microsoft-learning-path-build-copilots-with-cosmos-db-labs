@@ -374,3 +374,7 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
     In the reply, you should see a list of all gloves in database, which will include the 25% discount price.
 
 1. Finally, ask "What gloves are best cold weather riding?" to perform a vector search. This involves a function call to the `get_similar_items` method, which then calls both the `generate_embeddings` method you updated to use a LangChain implementation and the `vector_search` function.
+
+1. Close the integrated terminal.
+
+1. Close **Visual Studio Code**.
