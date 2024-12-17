@@ -57,7 +57,7 @@ As the final task in this exercise, you will grant your Microsoft Entra ID user 
 
 1. Before assigning your account to the **Cosmos DB Built-in Data Contributor** RBAC role, you must retrieve your Entra ID user identity object ID using the Azure CLI. Execute the following command a the Cloud Shell prompt, replacing the `<USER_PRINCIPAL_NAME>` with your user principal name (e.g., an email address like `user@domain.com`).
 
-    ```azurecli
+    ```bash
     az ad user show --id <USER_PRINCIPAL_NAME> --query id --output tsv
     ```
 
@@ -67,7 +67,7 @@ As the final task in this exercise, you will grant your Microsoft Entra ID user 
 
 1. Next, you will retrieve the definition id of the **Cosmos DB Built-in Data Contributor** role. Run the following command, ensuring you replace the `<RESOURCE_GROUP_NAME>` and `<COSMOS_DB_ACCOUNT_NAME>` tokens.
 
-    ```azurecli
+    ```bash
     az cosmosdb sql role definition list --resource-group "<RESOURCE_GROUP_NAME>" --account-name "<COSMOS_DB_ACCOUNT_NAME>"
     ```
 
@@ -77,7 +77,7 @@ As the final task in this exercise, you will grant your Microsoft Entra ID user 
 
     > &#128221; In the command below, the `role-definition-id` is set to `00000000-0000-0000-0000-000000000002`, which is the default value for the **Cosmos DB Built-in Data Contributor** role definition. If the value you retrieved from the `az cosmosdb sql role definition list` command differs, replace the value in the command below before execution.
 
-    ```azurecli
+    ```bash
     az cosmosdb sql role assignment create --resource-group "<RESOURCE_GROUP_NAME>" --account-name "<COSMOS_DB_ACCOUNT_NAME>" --role-definition-id "00000000-0000-0000-0000-000000000002" --principal-id "<PRINCIPAL_OBJECT_ID>" --scope "/"
     ```
 
