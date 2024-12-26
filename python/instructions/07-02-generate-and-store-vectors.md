@@ -106,7 +106,7 @@ Virtual environments in Python are essential for maintaining a clean and organiz
     python -m venv .venv 
     ```
 
-    The able command will create a `.venv` folder under the `07-build-copilot` folder, which will provide a dedicated Python environment for the exercises in this lab.
+    The above command will create a `.venv` folder under the `07-build-copilot` folder, which will provide a dedicated Python environment for the exercises in this lab.
 
 4. Activate the virtual environment by selecting the appropriate command for your OS and shell from the table below and executing it at the terminal prompt.
 
