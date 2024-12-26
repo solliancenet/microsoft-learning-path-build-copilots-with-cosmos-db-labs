@@ -1,7 +1,7 @@
 ---
-title: '07 - Enable Vector Search for Azure Cosmos DB for NoSQL'
+title: '07.1 - Enable Vector Search for Azure Cosmos DB for NoSQL'
 lab:
-    title: '07 - Enable Vector Search for Azure Cosmos DB for NoSQL'
+    title: '07.1 - Enable Vector Search for Azure Cosmos DB for NoSQL'
     module: 'Build copilots with Python and Azure Cosmos DB for NoSQL'
 layout: default
 nav_order: 10
@@ -34,12 +34,12 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
 
 3. Enable the *Vector Search for NoSQL API* feature by executing the following command from the Azure Cloud Shell, replacing the `<RESOURCE_GROUP_NAME>` and `<COSMOS_DB_ACCOUNT_NAME>` tokens with the name of your resource group and Azure Cosmos DB account name, respectively.
 
-      ```azurecli
-      az cosmosdb update \
-        --resource-group <RESOURCE_GROUP_NAME> \
-        --name <COSMOS_DB_ACCOUNT_NAME> \
-        --capabilities EnableNoSQLVectorSearch
-      ```
+     ```bash
+     az cosmosdb update \
+       --resource-group <RESOURCE_GROUP_NAME> \
+       --name <COSMOS_DB_ACCOUNT_NAME> \
+       --capabilities EnableNoSQLVectorSearch
+     ```
 
 4. Wait for the command to run successfully before exiting the Cloud Shell.
 
@@ -73,3 +73,5 @@ In this task, you will enable the *Vector Search for NoSQL API* feature in your 
       ![Screenshot of the Container Vector Policy specified above entered into the New Container dialog.](media/07-azure-cosmos-db-container-vector-policy.png)
 
    6. Select **OK** to create the database and container.
+
+   7. Wait for the container to be created before proceeding. It may take several minutes for the container to be ready.
