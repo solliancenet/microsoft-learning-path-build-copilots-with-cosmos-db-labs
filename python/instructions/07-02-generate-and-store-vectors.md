@@ -458,7 +458,7 @@ You are now ready to test both the `generate_embeddings` and `upsert_document` f
    python main.py
    ```
 
-3. Wait for the code execution to complete, indicated by a message indicating all products with vectorized descriptions have been upserted to the Cosmos DB container. It may take up to five minutes for the vectorization and data upsert process to complete for the 295 records in the products dataset.
+3. Wait for the code execution to complete, indicated by a message indicating all products with vectorized descriptions have been upserted to the Cosmos DB container. It may take up to 10 - 15 minutes for the vectorization and data upsert process to complete for the 295 records in the products dataset. If not all products are inserted, you can rerun `main.py` using the command above to add the remaining products.
 
 ## Review upserted sample data in Cosmos DB
 
