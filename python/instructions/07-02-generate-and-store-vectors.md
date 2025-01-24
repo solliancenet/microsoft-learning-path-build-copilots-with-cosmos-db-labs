@@ -86,7 +86,7 @@ To allow your user identity to interact with the Azure OpenAI service, you can a
 
 4. On the **Role** tab, select the **Cognitive Services OpenAI User** role, then select **Next**.
 
-5. On the **Memebers** tab, select assign access to a user, group, or service principal, and select **Select members**.
+5. On the **Members** tab, select assign access to a user, group, or service principal, and select **Select members**.
 
 6. In the **Select members** dialog, search for your name or email address and select your account.
 
