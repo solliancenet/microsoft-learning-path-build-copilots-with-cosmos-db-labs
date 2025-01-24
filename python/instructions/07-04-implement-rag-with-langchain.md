@@ -220,6 +220,8 @@ Using LangChain to interact with language models deployed in your Azure OpenAI S
        model = COMPLETION_DEPLOYMENT_NAME,
        messages = messages
    )
+
+   return final_response.choices[0].message.content
    ```
 
 1. Working from just below the `tools` array definition, create a reference to the Azure OpenAI API using the `AzureChatOpenAI` class in LangChain:
