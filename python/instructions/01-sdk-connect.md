@@ -104,7 +104,7 @@ Once the Azure Cosmos DB library from the Azure SDK for Python has been imported
    endpoint = "<cosmos-endpoint>"
    credential = DefaultAzureCredential()
 
-   client = CosmosClient(endpoint, key)
+   client = CosmosClient(endpoint, credential=credential)
 
    def main():
        account_info = client.get_database_account()
